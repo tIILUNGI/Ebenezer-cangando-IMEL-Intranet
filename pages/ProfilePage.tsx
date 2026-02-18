@@ -1,12 +1,13 @@
-
 import React, { useState } from 'react';
-import { useAuth, useDatabase, useSettings } from '../App';
-import { User as UserIcon, Lock, Mail, Save, RefreshCw, Key, Shield } from 'lucide-react';
+import { useAuth, useDatabase } from '../App';
+import { User as UserIcon, Save, RefreshCw, Key, Shield } from 'lucide-react';
 
 const ProfilePage: React.FC = () => {
   const { user } = useAuth();
   const { updateUser } = useDatabase();
   const [isSaving, setIsSaving] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [passData, setPassData] = useState({
     current: '',
     new: '',
@@ -15,21 +16,28 @@ const ProfilePage: React.FC = () => {
 
   const handlePasswordChange = (e: React.FormEvent) => {
     e.preventDefault();
-    if (passData.new !== passData.confirm) {
-      alert('As senhas não coincidem!');
+    setError('');
+    setSuccess('');
+    if (!user) return;
+
+    if (user.password !== passData.current) {
+      setError('A senha atual está incorreta.');
       return;
     }
-    
+    if (passData.new !== passData.confirm) {
+      setError('As senhas não coincidem.');
+      return;
+    }
+    if (passData.new.length < 6) {
+      setError('A nova senha deve ter no mínimo 6 caracteres.');
+      return;
+    }
+
     setIsSaving(true);
-    setTimeout(() => {
-      // No mundo real, aqui haveria hash de senha no backend
-      if (user) {
-        updateUser(user.id, { email: user.email }, user.name);
-        alert('Palavra-passe atualizada com sucesso!');
-        setPassData({ current: '', new: '', confirm: '' });
-      }
-      setIsSaving(false);
-    }, 1000);
+    updateUser(user.id, { password: passData.new }, user.name);
+    setPassData({ current: '', new: '', confirm: '' });
+    setSuccess('Palavra-passe atualizada com sucesso.');
+    setIsSaving(false);
   };
 
   if (!user) return null;
@@ -98,7 +106,7 @@ const ProfilePage: React.FC = () => {
                 required
                 value={passData.new}
                 onChange={(e) => setPassData({...passData, new: e.target.value})}
-                placeholder="Mínimo 8 caracteres"
+                placeholder="Mínimo 6 caracteres"
                 className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:border-primary dark:text-white"
               />
             </div>
@@ -113,6 +121,9 @@ const ProfilePage: React.FC = () => {
                 className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:border-primary dark:text-white"
               />
             </div>
+
+            {error && <p className="text-sm text-red-500 font-bold">{error}</p>}
+            {success && <p className="text-sm text-emerald-500 font-bold">{success}</p>}
 
             <button 
               type="submit" 
@@ -130,7 +141,7 @@ const ProfilePage: React.FC = () => {
         <Shield className="text-emerald-500 shrink-0" size={24} />
         <div>
           <p className="font-bold text-emerald-700 dark:text-emerald-400">Proteção de Identidade</p>
-          <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">As suas credenciais são criptografadas e qualquer alteração é registrada nos logs de auditoria do sistema para garantir a sua segurança.</p>
+          <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">As suas credenciais são registradas localmente e qualquer alteração é registrada nos logs de auditoria do sistema.</p>
         </div>
       </div>
     </div>

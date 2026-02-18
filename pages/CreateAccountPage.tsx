@@ -1,36 +1,45 @@
-
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { GraduationCap, ArrowRight, ArrowLeft, CheckCircle2, User, Mail, Lock } from 'lucide-react';
-import { TEST_USERS } from '../constants';
+import { ArrowRight, ArrowLeft, CheckCircle2, User, Mail, Lock } from 'lucide-react';
+import { useDatabase } from '../App';
 
 const CreateAccountPage: React.FC = () => {
   const [step, setStep] = useState(1);
   const [processNumber, setProcessNumber] = useState('');
   const [foundUser, setFoundUser] = useState<any>(null);
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const { users, updateUser } = useDatabase();
 
   const handleVerify = (e: React.FormEvent) => {
     e.preventDefault();
-    const user = TEST_USERS.find(u => u.processNumber === processNumber);
-    if (user) {
-      setFoundUser(user);
-      setStep(2);
-      setError('');
-    } else {
+    const user = users.find(u => u.processNumber === processNumber);
+    if (!user) {
       setError('Número de processo não encontrado na base de dados do IMEL.');
+      return;
     }
+    setFoundUser(user);
+    setError('');
+    setStep(2);
   };
 
   const handleFinish = (e: React.FormEvent) => {
     e.preventDefault();
+    if (password.length < 6) {
+      setError('A senha deve ter no mínimo 6 caracteres.');
+      return;
+    }
+    if (password !== confirmPassword) {
+      setError('As senhas não coincidem.');
+      return;
+    }
+
+    updateUser(foundUser.id, { email, password, isActive: true }, foundUser.name);
     setStep(3);
-    setTimeout(() => {
-      navigate('/login');
-    }, 3000);
+    window.setTimeout(() => navigate('/login'), 1200);
   };
 
   return (
@@ -122,6 +131,8 @@ const CreateAccountPage: React.FC = () => {
                     <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
                     <input 
                       type="password" 
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
                       placeholder="••••••••"
                       className="w-full pl-12 pr-4 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:border-[#003366] focus:bg-white transition-all outline-none"
                       required
@@ -129,6 +140,12 @@ const CreateAccountPage: React.FC = () => {
                   </div>
                 </div>
               </div>
+
+              {error && (
+                <div className="p-4 bg-red-50 text-red-600 text-sm font-medium rounded-xl border border-red-100">
+                  {error}
+                </div>
+              )}
 
               <div className="p-4 bg-blue-50 text-[#003366] text-xs leading-relaxed rounded-xl italic">
                 Ao criar sua conta, você concorda com os termos de uso e política de privacidade da Intranet IMEL.
@@ -153,19 +170,9 @@ const CreateAccountPage: React.FC = () => {
             <p className="text-slate-600 text-lg mb-8 max-w-sm mx-auto">
               Sua conta no sistema IMEL Intranet foi criada com sucesso. Redirecionando para o login...
             </p>
-            <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
-              <div className="h-full bg-emerald-500 animate-[progress_3s_ease-in-out]"></div>
-            </div>
           </div>
         )}
       </div>
-      
-      <style>{`
-        @keyframes progress {
-          from { width: 0%; }
-          to { width: 100%; }
-        }
-      `}</style>
     </div>
   );
 };

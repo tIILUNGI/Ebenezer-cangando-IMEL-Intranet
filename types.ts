@@ -12,9 +12,11 @@ export interface User {
   name: string;
   processNumber: string;
   role: UserRole;
+  password?: string;
   email?: string;
   avatar?: string;
   turma?: string;
+  isActive?: boolean;
   studentIds?: string[];
   notificationPrefs?: {
     email: boolean;
@@ -62,12 +64,18 @@ export interface LibraryResource {
   authorId: string;
   date: string;
   size?: string;
+  fileName?: string;
+  mimeType?: string;
+  dataUrl?: string;
+  downloads?: number;
   turmaTarget?: string;
 }
 
 export interface Message {
   id: string;
+  fromId: string;
   from: string;
+  toId: string;
   to: string;
   content: string;
   timestamp: string;

@@ -36,6 +36,8 @@ const DashboardPage: React.FC = () => {
   
   const [aiInsight, setAiInsight] = useState<AIInsight | null>(null);
   const [isAiLoading, setIsAiLoading] = useState(false);
+  const [aiQuestion, setAiQuestion] = useState('');
+  const [aiAnswer, setAiAnswer] = useState('');
 
   const isDiretor = user?.role === UserRole.DIRETOR;
   const isAdmin = user?.role === UserRole.ADMIN;
@@ -86,6 +88,24 @@ const DashboardPage: React.FC = () => {
         content: isDiretor ? "O índice de aprovação na 12ª classe subiu 4.2% este mês." : "Foco em reforçar os conceitos de Programação no 2º trimestre.",
         severity: "medium"
       });
+    } finally {
+      setIsAiLoading(false);
+    }
+  };
+
+  const askAiAboutSystem = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!aiQuestion.trim()) return;
+    setIsAiLoading(true);
+    try {
+      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+      const response = await ai.models.generateContent({
+        model: 'gemini-3-flash-preview',
+        contents: `Você é assistente do sistema escolar IMEL. Responda de forma curta e prática. Pergunta do usuário: ${aiQuestion}`
+      });
+      setAiAnswer(response.text || 'Sem resposta no momento.');
+    } catch (error) {
+      setAiAnswer('Não foi possível consultar a IA agora. Verifique a chave GEMINI_API_KEY.');
     } finally {
       setIsAiLoading(false);
     }
@@ -232,12 +252,29 @@ const DashboardPage: React.FC = () => {
                <button className="w-full p-4 bg-white/10 rounded-2xl flex items-center justify-between hover:bg-white/20 transition-all border border-white/5">
                  <span className="text-[10px] font-black uppercase tracking-widest truncate mr-2">Secretaria Académica</span>
                  <Send size={14} className="shrink-0" />
-               </button>
-               <button className="w-full p-4 bg-white/10 rounded-2xl flex items-center justify-between hover:bg-white/20 transition-all border border-white/5">
+               </button>               <a href="https://wa.me/244938229459" target="_blank" rel="noopener noreferrer" className="w-full p-4 bg-white/10 rounded-2xl flex items-center justify-between hover:bg-white/20 transition-all border border-white/5">
                  <span className="text-[10px] font-black uppercase tracking-widest truncate mr-2">Apoio Técnico (TI)</span>
                  <Send size={14} className="shrink-0" />
-               </button>
+               </a>
             </div>
+          </div>
+
+          <div className="bg-white dark:bg-slate-800 p-6 sm:p-8 rounded-[2rem] sm:rounded-[2.5rem] border border-slate-100 dark:border-slate-700 shadow-sm">
+            <h3 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+              <BrainCircuit className="text-primary" size={20} /> Assistente IA do Sistema
+            </h3>
+            <form onSubmit={askAiAboutSystem} className="space-y-3">
+              <input
+                value={aiQuestion}
+                onChange={(e) => setAiQuestion(e.target.value)}
+                placeholder="Pergunte sobre funcionalidades do sistema"
+                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:border-primary text-sm"
+              />
+              <button type="submit" disabled={isAiLoading} className="w-full py-3 bg-primary text-white rounded-xl font-black text-xs uppercase tracking-widest disabled:opacity-60">
+                {isAiLoading ? 'A processar...' : 'Perguntar Ã  IA'}
+              </button>
+            </form>
+            {aiAnswer && <p className="mt-4 text-sm text-slate-600 dark:text-slate-300 leading-relaxed">{aiAnswer}</p>}
           </div>
 
           <div className="bg-white dark:bg-slate-800 p-8 rounded-[2rem] sm:rounded-[2.5rem] border border-slate-100 dark:border-slate-700 shadow-sm text-center">
@@ -255,3 +292,6 @@ const DashboardPage: React.FC = () => {
 };
 
 export default DashboardPage;
+
+
+

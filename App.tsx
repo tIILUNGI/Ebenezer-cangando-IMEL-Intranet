@@ -48,10 +48,12 @@ interface DatabaseContextType {
   addUser: (user: Omit<User, 'id'>, createdBy: string) => void;
   updateUser: (id: string, updates: Partial<User>, updatedBy: string) => void;
   deleteUser: (id: string, deletedBy: string) => void;
-  sendMessage: (to: string, content: string) => void;
+  sendMessage: (toId: string, content: string) => void;
+  markMessageRead: (id: string) => void;
   addNotification: (notification: Omit<Notification, 'id' | 'timestamp' | 'read'>) => void;
   markNotificationRead: (id: string) => void;
   addLibraryResource: (resource: Omit<LibraryResource, 'id' | 'date'>) => void;
+  incrementLibraryDownloads: (id: string) => void;
 }
 
 const DatabaseContext = createContext<DatabaseContextType | undefined>(undefined);
@@ -67,7 +69,15 @@ const DatabaseProvider: React.FC<{ children: React.ReactNode }> = ({ children })
     { id: 'l1', title: 'TLP: POO em C# - Exercícios 1º Trimestre', subject: 'TLP', author: 'Eng. Domingos Neto', authorId: '2', date: '2024-05-10', type: 'PDF', size: '1.2MB' },
     { id: 'l2', title: 'TRECE: Camadas OSI e TCP/IP', subject: 'TRECE', author: 'Eng. Domingos Neto', authorId: '2', date: '2024-06-01', type: 'PDF', size: '2.5MB' }
   ])));
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<Message[]>(() => {
+    const raw = JSON.parse(localStorage.getItem('imel_db_messages') || '[]');
+    if (!Array.isArray(raw)) return [];
+    return raw.map((m: any) => ({
+      ...m,
+      fromId: m.fromId || '0',
+      toId: m.toId || '0'
+    }));
+  });
 
   useEffect(() => {
     localStorage.setItem('imel_db_users', JSON.stringify(users));
@@ -76,7 +86,20 @@ const DatabaseProvider: React.FC<{ children: React.ReactNode }> = ({ children })
     localStorage.setItem('imel_db_logs', JSON.stringify(auditLogs));
     localStorage.setItem('imel_db_notifs', JSON.stringify(notifications));
     localStorage.setItem('imel_db_library', JSON.stringify(library));
-  }, [users, grades, schedules, auditLogs, notifications, library]);
+    localStorage.setItem('imel_db_messages', JSON.stringify(messages));
+  }, [users, grades, schedules, auditLogs, notifications, library, messages]);
+
+  const addAuditLog = (user: string, action: string, target: string, details: string) => {
+    const entry: AuditLog = {
+      id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+      user,
+      action,
+      target,
+      details,
+      timestamp: new Date().toLocaleString()
+    };
+    setAuditLogs(prev => [entry, ...prev].slice(0, 400));
+  };
 
   const addNotification = (notif: Omit<Notification, 'id' | 'timestamp' | 'read'>) => {
     const newNotif: Notification = {
@@ -96,37 +119,80 @@ const DatabaseProvider: React.FC<{ children: React.ReactNode }> = ({ children })
     const newRes: LibraryResource = {
       ...resource,
       id: Date.now().toString(),
-      date: new Date().toLocaleDateString()
+      date: new Date().toLocaleDateString(),
+      downloads: 0
     };
     setLibrary(prev => [newRes, ...prev]);
+    addAuditLog(resource.author || 'Sistema', 'ADICIONOU_ARQUIVO', newRes.title, `${newRes.subject} (${newRes.type})`);
+  };
+
+  const incrementLibraryDownloads = (id: string) => {
+    setLibrary(prev => prev.map(r => (r.id === id ? { ...r, downloads: (r.downloads || 0) + 1 } : r)));
   };
 
   const updateGrade = (id: string, updates: any, updatedBy: string) => {
     setGrades(prev => prev.map(g => {
       if (g.id === id) {
+        addAuditLog(updatedBy, 'ALTEROU_NOTA', g.studentName, g.subject);
         return { ...g, ...updates, updatedAt: new Date().toLocaleDateString(), updatedBy };
       }
       return g;
     }));
   };
 
-  const addUser = (userData: Omit<User, 'id'>, createdBy: string) => setUsers(prev => [...prev, { ...userData, id: Date.now().toString() }]);
-  const updateUser = (id: string, updates: Partial<User>, updatedBy: string) => setUsers(prev => prev.map(u => u.id === id ? { ...u, ...updates } : u));
-  const deleteUser = (id: string, deletedBy: string) => setUsers(prev => prev.filter(u => u.id !== id));
+  const addUser = (userData: Omit<User, 'id'>, createdBy: string) => {
+    setUsers(prev => [...prev, { ...userData, id: Date.now().toString() }]);
+    addAuditLog(createdBy, 'CRIOU_USUARIO', userData.name, userData.processNumber);
+  };
+
+  const updateUser = (id: string, updates: Partial<User>, updatedBy: string) => {
+    const userTarget = users.find(u => u.id === id);
+    setUsers(prev => prev.map(u => u.id === id ? { ...u, ...updates } : u));
+    if (userTarget) {
+      addAuditLog(updatedBy, 'ALTEROU_USUARIO', userTarget.name, Object.keys(updates).join(', '));
+    }
+  };
+
+  const deleteUser = (id: string, deletedBy: string) => {
+    const userTarget = users.find(u => u.id === id);
+    setUsers(prev => prev.filter(u => u.id !== id));
+    if (userTarget) {
+      addAuditLog(deletedBy, 'REMOVEU_USUARIO', userTarget.name, userTarget.processNumber);
+    }
+  };
   
-  const sendMessage = (to: string, content: string) => {
-    const user = JSON.parse(localStorage.getItem('imel_user') || '{}');
+  const sendMessage = (toId: string, content: string) => {
+    const user = JSON.parse(localStorage.getItem('imel_user') || '{}') as User;
+    const target = users.find(u => u.id === toId);
+    if (!target) return;
     const newMessage: Message = {
-      id: Date.now().toString(), from: user.name || 'Sistema', to, content, timestamp: new Date().toLocaleTimeString(), read: false
+      id: Date.now().toString(),
+      fromId: user.id || '0',
+      from: user.name || 'Sistema',
+      toId: target.id,
+      to: target.name,
+      content,
+      timestamp: new Date().toLocaleString(),
+      read: false
     };
     setMessages(prev => [newMessage, ...prev]);
+    addNotification({
+      title: 'Nova mensagem',
+      message: `${user.name || 'Sistema'} enviou uma mensagem para ${target.name}.`,
+      type: 'message'
+    });
+    addAuditLog(user.name || 'Sistema', 'ENVIOU_MENSAGEM', target.name, content.slice(0, 80));
+  };
+
+  const markMessageRead = (id: string) => {
+    setMessages(prev => prev.map(m => m.id === id ? { ...m, read: true } : m));
   };
 
   return (
     <DatabaseContext.Provider value={{ 
       users, grades, schedules, library, messages, auditLogs, notifications, 
-      updateGrade, addUser, updateUser, deleteUser, sendMessage, 
-      addNotification, markNotificationRead, addLibraryResource 
+      updateGrade, addUser, updateUser, deleteUser, sendMessage, markMessageRead,
+      addNotification, markNotificationRead, addLibraryResource, incrementLibraryDownloads
     }}>
       {children}
     </DatabaseContext.Provider>
@@ -171,7 +237,7 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
   }, [users]);
 
   const login = async (process: string, pass: string) => {
-    const found = users.find((u: any) => u.processNumber === process);
+    const found = users.find((u: any) => u.processNumber === process && u.password === pass && u.isActive !== false);
     if (found) {
       setUser(found);
       localStorage.setItem('imel_user', JSON.stringify(found));

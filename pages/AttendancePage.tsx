@@ -16,8 +16,15 @@ const AttendancePage: React.FC = () => {
   const percPresenca = aulasTotais > 0 ? Math.round(((aulasTotais - totalFaltas) / aulasTotais) * 100) : 100;
 
   const handleJustifyClick = () => {
-    // Mensagem exata conforme solicitado
-    alert("VOCÊ PRECISA SE DIRIGIR A PAPELARIA PARA JUSTIFICAR A FALTA");
+    const justificacoes = JSON.parse(localStorage.getItem('imel_db_justificacoes') || '[]');
+    justificacoes.unshift({
+      id: Date.now().toString(),
+      studentId: activeStudent?.id,
+      studentName: activeStudent?.name,
+      createdAt: new Date().toLocaleString()
+    });
+    localStorage.setItem('imel_db_justificacoes', JSON.stringify(justificacoes.slice(0, 100)));
+    window.open('https://wa.me/244938229459', '_blank');
   };
 
   return (

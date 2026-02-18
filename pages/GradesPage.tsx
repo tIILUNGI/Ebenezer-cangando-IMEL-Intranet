@@ -22,11 +22,28 @@ const GradesPage: React.FC = () => {
   };
 
   const handleDownloadPDF = () => {
-    alert("Gerando Certificado Digital...\nO download do arquivo 'Boletim_Oficial_" + activeStudent?.name.replace(/ /g, '_') + ".pdf' começará em instantes.");
-    // No ambiente real, aqui chamaríamos uma lib como jsPDF. Aqui simulamos via print.
-    setTimeout(() => {
-      window.print();
-    }, 1000);
+    const fileName = `Boletim_Oficial_${activeStudent?.name?.replace(/ /g, '_') || 'Aluno'}.html`;
+    const html = `
+      <html><head><meta charset="utf-8"><title>${fileName}</title></head>
+      <body>
+        <h2>Boletim Trimestral</h2>
+        <p>Aluno: ${activeStudent?.name || '-'}</p>
+        <p>Processo: ${activeStudent?.processNumber || '-'}</p>
+        <p>Turma: ${activeStudent?.turma || '-'}</p>
+        <ul>
+          ${studentGrades.map(g => `<li>${g.subject}: Média ${g.t1.average ?? '-'} | Faltas ${g.faltas}</li>`).join('')}
+        </ul>
+      </body></html>
+    `;
+    const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
   };
 
   return (

@@ -1,19 +1,37 @@
-
-import React, { useState } from 'react';
-import { useDatabase } from '../App';
-import { Send, User as UserIcon, MessageCircle } from 'lucide-react';
+import React, { useMemo, useState } from 'react';
+import { useDatabase, useAuth } from '../App';
+import { Send, MessageCircle } from 'lucide-react';
 
 const MessagesPage: React.FC = () => {
-  const { messages, sendMessage, users } = useDatabase();
-  const [target, setTarget] = useState('');
+  const { messages, sendMessage, markMessageRead, users } = useDatabase();
+  const { user } = useAuth();
+  const [targetId, setTargetId] = useState('');
   const [content, setContent] = useState('');
+
+  const availableTargets = useMemo(() => {
+    if (!user) return [];
+    return users.filter(u => {
+      if (u.id === user.id) return false;
+      if (user.turma) return u.turma === user.turma;
+      return true;
+    });
+  }, [users, user]);
+
+  const relatedMessages = useMemo(() => {
+    if (!user) return [];
+    return messages.filter(m => m.toId === user.id || m.fromId === user.id);
+  }, [messages, user]);
+
+  const inboxMessages = useMemo(() => {
+    if (!user) return [];
+    return relatedMessages.filter(m => m.toId === user.id);
+  }, [relatedMessages, user]);
 
   const handleSend = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!target || !content) return;
-    sendMessage(target, content);
+    if (!targetId || !content.trim()) return;
+    sendMessage(targetId, content.trim());
     setContent('');
-    alert('Mensagem enviada com sucesso!');
   };
 
   return (
@@ -23,10 +41,13 @@ const MessagesPage: React.FC = () => {
         <form onSubmit={handleSend} className="space-y-6 flex-1">
           <div>
             <label className="text-xs font-black text-slate-400 uppercase mb-2 block">Destinatário</label>
-            <select value={target} onChange={(e) => setTarget(e.target.value)} className="w-full p-4 bg-slate-50 dark:bg-slate-900 rounded-2xl border-none outline-none font-bold text-slate-700 dark:text-slate-200">
+            <select value={targetId} onChange={(e) => setTargetId(e.target.value)} className="w-full p-4 bg-slate-50 dark:bg-slate-900 rounded-2xl border-none outline-none font-bold text-slate-700 dark:text-slate-200">
               <option value="">Seleccione um usuário</option>
-              {users.map(u => <option key={u.id} value={u.name}>{u.name} ({u.role})</option>)}
+              {availableTargets.map(u => <option key={u.id} value={u.id}>{u.name} ({u.role})</option>)}
             </select>
+            {availableTargets.length === 0 && (
+              <p className="text-[10px] font-bold text-slate-400 mt-2">Nenhum usuário da mesma turma disponível.</p>
+            )}
           </div>
           <div className="flex-1 flex flex-col">
             <label className="text-xs font-black text-slate-400 uppercase mb-2 block">Conteúdo</label>
@@ -41,14 +62,18 @@ const MessagesPage: React.FC = () => {
       <div className="lg:col-span-2 bg-white dark:bg-slate-800 rounded-[2.5rem] shadow-sm border border-slate-100 dark:border-slate-700 p-8 flex flex-col">
         <h3 className="text-xl font-black text-slate-900 dark:text-white mb-8">Caixa de Entrada</h3>
         <div className="space-y-4 overflow-y-auto flex-1 pr-2">
-          {messages.length === 0 ? (
+          {inboxMessages.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-slate-300">
               <MessageCircle size={64} className="mb-4 opacity-20" />
               <p className="font-bold italic">Nenhuma mensagem recente</p>
             </div>
           ) : (
-            messages.map(msg => (
-              <div key={msg.id} className="p-6 bg-slate-50 dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-700 hover:shadow-md transition-all">
+            inboxMessages.map(msg => (
+              <button
+                key={msg.id}
+                onClick={() => markMessageRead(msg.id)}
+                className={`w-full text-left p-6 bg-slate-50 dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-700 hover:shadow-md transition-all ${!msg.read ? 'ring-2 ring-primary/20' : ''}`}
+              >
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 bg-white dark:bg-slate-800 text-[#003366] rounded-full flex items-center justify-center font-bold">
@@ -62,7 +87,7 @@ const MessagesPage: React.FC = () => {
                   <span className="text-[10px] font-black text-[#FFD700] uppercase tracking-widest">Para: {msg.to}</span>
                 </div>
                 <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">{msg.content}</p>
-              </div>
+              </button>
             ))
           )}
         </div>

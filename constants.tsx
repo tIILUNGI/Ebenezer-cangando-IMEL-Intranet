@@ -30,7 +30,9 @@ const generateUniqueMockStudents = (): User[] => {
       name: name,
       processNumber: (2022450 + index).toString(),
       role: UserRole.ALUNO,
-      turma: 'I12B (Inf. Gestão)'
+      turma: 'I12B (Inf. Gestão)',
+      password: '123456',
+      isActive: false
     });
   });
   return students;
@@ -38,10 +40,10 @@ const generateUniqueMockStudents = (): User[] => {
 
 export const TEST_USERS: User[] = [
   ...generateUniqueMockStudents(),
-  { id: '2', name: 'Eng. Domingos Neto', processNumber: 'IT-3001', role: UserRole.PROFESSOR }, 
-  { id: '3', name: 'Admin Geral', processNumber: '999000', role: UserRole.ADMIN },
-  { id: '4', name: 'Dr. Augusto Feliciano', processNumber: '888000', role: UserRole.DIRETOR },
-  { id: '5', name: 'Pedro João', processNumber: '777000', role: UserRole.ENCARREGADO, studentIds: ['std-1', 'std-2'] },
+  { id: '2', name: 'Eng. Domingos Neto', processNumber: 'IT-3001', role: UserRole.PROFESSOR, password: '123456', isActive: true }, 
+  { id: '3', name: 'Admin Geral', processNumber: '999000', role: UserRole.ADMIN, password: '123456', isActive: true },
+  { id: '4', name: 'Dr. Augusto Feliciano', processNumber: '888000', role: UserRole.DIRETOR, password: '123456', isActive: true },
+  { id: '5', name: 'Pedro João', processNumber: '777000', role: UserRole.ENCARREGADO, studentIds: ['std-1', 'std-2'], password: '123456', isActive: true },
 ];
 
 export const SIDEBAR_LINKS: SidebarItem[] = [
@@ -155,3 +157,4 @@ const generateFullSchedule = (): ClassSchedule[] => {
 };
 
 export const MOCK_SCHEDULE: ClassSchedule[] = generateFullSchedule();
+

@@ -255,7 +255,7 @@ const LandingPage: React.FC = () => {
           <div className="flex flex-wrap justify-center gap-x-12 gap-y-4">
             <Link to="/termos" className="text-sm font-bold text-slate-500 hover:text-primary transition-colors">Termos de Utilização</Link>
             <Link to="/privacidade" className="text-sm font-bold text-slate-500 hover:text-primary transition-colors">Privacidade</Link>
-            <Link to="/suporte" className="text-sm font-bold text-slate-500 hover:text-primary transition-colors">Suporte Técnico</Link>
+            <a href="https://wa.me/244938229459" target="_blank" rel="noopener noreferrer" className="text-sm font-bold text-slate-500 hover:text-primary transition-colors">Suporte Técnico</a>
             <a href="https://acessoetp.ao" target="_blank" rel="noopener noreferrer" className="text-sm font-bold text-slate-500 hover:text-primary transition-colors">Portal Governamental</a>
           </div>
 

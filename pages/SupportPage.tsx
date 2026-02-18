@@ -4,6 +4,8 @@ import { HelpCircle, ArrowLeft, Mail, Phone, MessageSquare } from 'lucide-react'
 import { Link } from 'react-router-dom';
 
 const SupportPage: React.FC = () => {
+  const whatsappLink = 'https://wa.me/244938229459';
+
   return (
     <div className="min-h-screen bg-white dark:bg-slate-900 p-8 md:p-16 animate-fade">
       <div className="max-w-4xl mx-auto space-y-12">
@@ -27,10 +29,10 @@ const SupportPage: React.FC = () => {
                 <Mail className="text-primary" />
                 <span>suporte@imel.edu.ao</span>
               </div>
-              <div className="flex items-center gap-4 text-slate-600 dark:text-slate-300">
+              <a href={whatsappLink} target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 text-slate-600 dark:text-slate-300">
                 <Phone className="text-primary" />
-                <span>+244 9XX XXX XXX</span>
-              </div>
+                <span>+244 938 229 459 (WhatsApp)</span>
+              </a>
             </div>
           </div>
 

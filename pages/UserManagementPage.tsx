@@ -19,7 +19,9 @@ const UserManagementPage: React.FC<Props> = ({ mode = 'full' }) => {
     name: '',
     processNumber: '',
     role: UserRole.ALUNO,
-    turma: ''
+    turma: '',
+    password: '123456',
+    isActive: true
   });
 
   // Somente ADMIN pode editar. DIRETOR apenas visualiza para auditoria.
@@ -34,7 +36,7 @@ const UserManagementPage: React.FC<Props> = ({ mode = 'full' }) => {
 
   const handleOpenAdd = () => {
     setEditingUser(null);
-    setFormData({ name: '', processNumber: '', role: UserRole.ALUNO, turma: '' });
+    setFormData({ name: '', processNumber: '', role: UserRole.ALUNO, turma: '', password: '123456', isActive: true });
     setIsModalOpen(true);
   };
 
@@ -181,6 +183,16 @@ const UserManagementPage: React.FC<Props> = ({ mode = 'full' }) => {
                   <select value={formData.role} onChange={(e) => setFormData({...formData, role: e.target.value as UserRole})} className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:border-primary dark:text-white">
                     {Object.values(UserRole).map(role => <option key={role} value={role}>{role}</option>)}
                   </select>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-black text-slate-400 uppercase mb-2">Turma</label>
+                  <input type="text" value={formData.turma || ''} onChange={(e) => setFormData({...formData, turma: e.target.value})} className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:border-primary dark:text-white" />
+                </div>
+                <div>
+                  <label className="block text-xs font-black text-slate-400 uppercase mb-2">Senha Inicial</label>
+                  <input type="text" required value={formData.password || ''} onChange={(e) => setFormData({...formData, password: e.target.value})} className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:border-primary dark:text-white" />
                 </div>
               </div>
               <div className="pt-4 flex gap-3">

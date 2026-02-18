@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
-import { Bell, Search, Menu, Sun, Moon, Languages, Check, MessageSquare, AlertCircle, FileText, User as UserIcon } from 'lucide-react';
+import { Bell, Search, Menu, Sun, Moon, Languages, MessageSquare, AlertCircle, FileText } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth, useSettings, useDatabase } from '../App';
 
 interface TopbarProps {
@@ -11,7 +12,9 @@ const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
   const { user } = useAuth();
   const { theme, lang, toggleTheme, toggleLang, t } = useSettings();
   const { notifications, markNotificationRead } = useDatabase();
+  const navigate = useNavigate();
   const [showNotifs, setShowNotifs] = useState(false);
+  const [searchValue, setSearchValue] = useState('');
 
   const unreadCount = notifications.filter(n => !n.read).length;
 
@@ -24,6 +27,29 @@ const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
     }
   };
 
+  const handleSearchNavigation = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key !== 'Enter') return;
+    const value = searchValue.trim().toLowerCase();
+    if (!value) return;
+
+    const routeMap: Record<string, string> = {
+      dashboard: '/dashboard',
+      painel: '/dashboard',
+      notas: '/notas',
+      frequencia: '/frequencia',
+      horario: '/horario',
+      biblioteca: '/biblioteca',
+      mensagens: '/mensagens',
+      perfil: '/perfil',
+      usuarios: '/admin/usuarios',
+      branding: '/admin/branding',
+      suporte: '/suporte'
+    };
+
+    const target = routeMap[value];
+    if (target) navigate(target);
+  };
+
   return (
     <header className="h-16 md:h-20 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 px-4 md:px-8 flex items-center justify-between sticky top-0 z-30 shadow-sm transition-colors duration-300">
       <div className="flex items-center gap-2 md:gap-4">
@@ -32,7 +58,7 @@ const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
         </button>
         <div className="hidden lg:flex items-center bg-slate-100 dark:bg-slate-700 px-4 py-2 rounded-xl w-64 xl:w-80">
           <Search size={18} className="text-slate-400" />
-          <input type="text" placeholder={t('search')} className="bg-transparent border-none focus:outline-none text-sm ml-3 w-full text-slate-600 dark:text-slate-200" />
+          <input type="text" value={searchValue} onChange={(e) => setSearchValue(e.target.value)} onKeyDown={handleSearchNavigation} placeholder={t('search')} className="bg-transparent border-none focus:outline-none text-sm ml-3 w-full text-slate-600 dark:text-slate-200" />
         </div>
       </div>
 

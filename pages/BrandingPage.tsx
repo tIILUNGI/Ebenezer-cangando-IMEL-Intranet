@@ -12,12 +12,8 @@ const BrandingPage: React.FC = () => {
 
   const handleSave = () => {
     setIsSaving(true);
-    // Simula atraso de rede mas a aplicação no contexto é instantânea
-    setTimeout(() => {
-      updateSettings(formData);
-      setIsSaving(false);
-      alert('Configurações de marca aplicadas com sucesso para todo o sistema!');
-    }, 500);
+    updateSettings(formData);
+    setIsSaving(false);
   };
 
   const handleReset = () => {
