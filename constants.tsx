@@ -1,4 +1,4 @@
-﻿import { 
+import { 
   LayoutDashboard, Users, ClipboardList, Calendar, FileText, MessageSquare, 
   Settings, BarChart3, Palette, Activity, FileStack,
   BookOpen, Zap, Globe, ShieldAlert,
@@ -42,7 +42,7 @@ export const TEST_USERS: User[] = [
   { id: '2', name: 'Eduardo Zamith', processNumber: 'professor123', role: UserRole.PROFESSOR, password: 'professor123', isActive: true }, 
   { id: '3', name: 'Ebenezer Vilola', processNumber: 'admin123', role: UserRole.ADMIN, password: 'admin123', isActive: true },
   { id: '4', name: 'Lizandro Sony', processNumber: 'diretor123', role: UserRole.DIRETOR, password: 'diretor123', isActive: true },
-  { id: '5', name: 'Ritá José', processNumber: 'encarregado123', role: UserRole.ENCARREGADO, studentIds: ['std-1', 'std-2'], password: 'encarregado123', isActive: false },
+  { id: '5', name: 'Rita José', processNumber: 'encarregado123', role: UserRole.ENCARREGADO, studentIds: ['std-1', 'std-2'], password: 'encarregado123', isActive: false },
   { id: 'sec-1', name: 'António Quissanga', processNumber: 'secretaria123', role: UserRole.ADMIN, password: 'secretaria123', isActive: true, turma: 'I12B (Inf. Gestão)' }
 ];
 

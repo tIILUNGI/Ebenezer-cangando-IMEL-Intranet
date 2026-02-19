@@ -1,4 +1,4 @@
-﻿# SIG-IMEL - Sistema Interno de Gestão Escolar
+# SIG-IMEL - Sistema Interno de Gestão Escolar
 
 Frontend em React com persistência em `localStorage`. Sem backend.
 
@@ -7,10 +7,10 @@ Frontend em React com persistência em `localStorage`. Sem backend.
 ## Checklist do Sistema
 
 ### Autenticação e Perfis
-- [x] Login com senha e conta ativa
-- [x] Criação de conta (ativa utilizador e grava e-mail/senha/telemóvel)
-- [x] Recuperação de senha (código local + atualização)
-- [x] Troca de senha no perfil com validação
+- [x] Login com palavra-passe e conta ativa
+- [x] Criação de conta (ativa utilizador e grava e-mail/palavra-passe/telemóvel)
+- [x] Recuperação de palavra-passe (código local + atualização)
+- [x] Troca de palavra-passe no perfil com validação
 
 ### Comunicação e Mensagens
 - [x] Mensagens persistentes no `localStorage`
@@ -46,32 +46,32 @@ Frontend em React com persistência em `localStorage`. Sem backend.
 
 ### Admin
 - Processo: `admin123`
-- Senha: `admin123`
+- Palavra-passe: `admin123`
 - Nome: Ebenezer Vilola
 
 ### Professor
 - Processo: `professor123`
-- Senha: `professor123`
+- Palavra-passe: `professor123`
 - Nome: Eduardo Zamith
 
 ### Diretor
 - Processo: `diretor123`
-- Senha: `diretor123`
+- Palavra-passe: `diretor123`
 - Nome: Lizandro Sony
 
 ### Encarregado
 - Processo: `encarregado123`
-- Senha: `encarregado123`
-- Nome: Ritá José
+- Palavra-passe: `encarregado123`
+- Nome: Rita José
 
 ### Secretaria Académica
 - Processo: `secretaria123`
-- Senha: `secretaria123`
+- Palavra-passe: `secretaria123`
 - Nome: António Quissanga
 
 ### Alunos
 - Processos: `aluno1`...`aluno35` com padrão `alunoN123`
-- Senha: igual ao processo (ex: `aluno1123`)
+- Palavra-passe: igual ao processo (ex: `aluno1123`)
 - Estado: inativos até "Criar conta"
 
 ---
