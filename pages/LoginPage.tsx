@@ -111,13 +111,13 @@ const LoginPage: React.FC = () => {
               className="w-full bg-primary text-white py-5 rounded-2xl font-black text-lg shadow-xl hover:opacity-95 active:scale-[0.98] transition-all disabled:opacity-70 flex items-center justify-center gap-4"
             >
               {isLoading ? 'A VERIFICAR...' : 'ENTRAR NA PLATAFORMA'}
-              {!isLoading && <ArrowRight size={20} />}\
+              {!isLoading && <ArrowRight size={20} />}
             </button>
 
             <div className="text-center pt-4">
               <p className="text-sm font-bold text-slate-500">
                 Não tem conta?{' '}
-                <Link to="/registrar" className="text-primary dark:text-secondary hover:underline font-black">
+                <Link to="/registar" className="text-primary dark:text-secondary hover:underline font-black">
                   Criar conta agora
                 </Link>
               </p>

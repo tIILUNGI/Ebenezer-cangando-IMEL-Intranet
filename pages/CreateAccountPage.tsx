@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { ArrowRight, ArrowLeft, CheckCircle2, User, Mail, Lock } from 'lucide-react';
 import { useDatabase } from '../App';
@@ -43,11 +43,11 @@ const CreateAccountPage: React.FC = () => {
   const handleFinish = async (e: React.FormEvent) => {
     e.preventDefault();
     if (password.length < 6) {
-      setError('A senha deve ter no mínimo 6 caracteres.');
+      setError('A palavra-passe deve ter no mínimo 6 caracteres.');
       return;
     }
     if (password === foundUser.processNumber) {
-      setError('A senha deve ser diferente do número de processo.');
+      setError('A palavra-passe deve ser diferente do número de processo.');
       return;
     }
     if (password !== confirmPassword) {
@@ -154,7 +154,7 @@ const CreateAccountPage: React.FC = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-bold text-slate-700 mb-2">Criar Senha</label>
+                  <label className="block text-sm font-bold text-slate-700 mb-2">Criar Palavra-passe</label>
                   <div className="relative">
                     <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
                     <input 
@@ -168,7 +168,7 @@ const CreateAccountPage: React.FC = () => {
                   </div>
                 </div>
                 <div>
-                  <label className="block text-sm font-bold text-slate-700 mb-2">Confirmar</label>
+                  <label className="block text-sm font-bold text-slate-700 mb-2">Confirmar Palavra-passe</label>
                   <div className="relative">
                     <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
                     <input 
@@ -198,7 +198,7 @@ const CreateAccountPage: React.FC = () => {
                 disabled={isSendingWelcome}
                 className="w-full bg-[#003366] text-white py-5 rounded-2xl font-bold text-lg hover:bg-blue-900 transition-all"
               >
-                {isSendingWelcome ? 'A enviar boas-vindas...' : 'Concluir Cadastro'}
+                {isSendingWelcome ? 'A enviar boas-vindas...' : 'Concluir Registo'}
               </button>
             </form>
           </div>

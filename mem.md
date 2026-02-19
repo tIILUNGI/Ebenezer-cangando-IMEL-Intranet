@@ -13,7 +13,7 @@
   - Use **Palavra-passe** instead of Senha.
   - Use **Registo** instead of Registro.
   - Use **Monitorização** instead of Monitoramento.
-  - Use **Telemóvel** instead of Celular.
+  - Use **Telemóvel** instead of Telemóvel (already correct).
   - Use **Utilizador** instead of Usuário.
 - **Encoding:** Files must be saved in UTF-8. Avoid characters that might break in non-UTF-8 environments.
 
@@ -32,3 +32,9 @@
 - **Spelling:** Standardized to Portuguese (PT-PT / Angola). Use "Palavra-passe" instead of "Senha", "Registo" instead of "Registro", and "Monitorização" instead of "Monitoramento".
 - **Encoding:** Files must be saved in UTF-8. Avoid characters that break in non-UTF-8 environments (e.g., corrupted acentos).
 - **Naming:** Correct spelling for mock users (e.g., "Rita José").
+
+## Architecture Details
+- **Frontend-only:** No backend server or database.
+- **Persistence:** All data is stored in the browser's `localStorage`.
+- **Mock Data:** Initial data is provided in `constants.tsx`.
+- **Netlify Functions:** Used for specific tasks like sending emails (simulated).
