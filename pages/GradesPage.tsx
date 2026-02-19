@@ -31,7 +31,7 @@ const GradesPage: React.FC = () => {
         <p>Processo: ${activeStudent?.processNumber || '-'}</p>
         <p>Turma: ${activeStudent?.turma || '-'}</p>
         <ul>
-          ${studentGrades.map(g => `<li>${g.subject}: MÃ©dia ${g.t1.average ?? '-'} | Faltas ${g.faltas}</li>`).join('')}
+          ${studentGrades.map(g => `<li>${g.subject}: Média ${g.t1.average ?? '-'} | Faltas ${g.faltas}</li>`).join('')}
         </ul>
       </body></html>
     `;
@@ -48,7 +48,7 @@ const GradesPage: React.FC = () => {
 
   return (
     <div className="space-y-8 animate-fade">
-      {/* Header com AÃ§Ãµes */}
+      {/* Header com Ações */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 no-print">
         <div>
           <h1 className="text-3xl font-black text-slate-900 dark:text-white uppercase tracking-tight">Mini-Pauta Individual</h1>
@@ -73,7 +73,7 @@ const GradesPage: React.FC = () => {
       {/* Resumo no Topo */}
       <div className="grid md:grid-cols-4 gap-6 no-print">
         <div className="bg-primary p-8 rounded-[2.5rem] text-white shadow-xl shadow-blue-900/20">
-          <p className="text-[10px] font-black uppercase opacity-60 mb-2">MÃ©dia Global (1Âº Tri)</p>
+          <p className="text-[10px] font-black uppercase opacity-60 mb-2">Média Global (1º Tri)</p>
           <h3 className="text-4xl font-black">{calculateGlobalAvg()}</h3>
         </div>
         <div className="bg-white dark:bg-slate-800 p-8 rounded-[2.5rem] border border-slate-100 dark:border-slate-700 shadow-sm transition-colors">
@@ -89,16 +89,16 @@ const GradesPage: React.FC = () => {
         </div>
         <div className="bg-white dark:bg-slate-800 p-8 rounded-[2.5rem] border border-slate-100 dark:border-slate-700 shadow-sm transition-colors">
           <p className="text-[10px] font-black uppercase text-slate-400 mb-2">Ano Lectivo</p>
-          <h3 className="text-2xl font-black text-slate-800 dark:text-white">2024/2025</h3>
+          <h3 className="text-2xl font-black text-slate-800 dark:text-white">2025/2026</h3>
         </div>
       </div>
 
       {/* Tabela de Pauta */}
       <div className="bg-white dark:bg-slate-800 rounded-[2.5rem] shadow-sm border border-slate-100 dark:border-slate-700 overflow-hidden print:border-none print:shadow-none transition-colors">
-        {/* CabeÃ§alho de ImpressÃ£o */}
+        {/* Cabeçalho de Impressão */}
         <div className="hidden print:block p-10 text-center border-b-2 border-slate-200">
-           <h1 className="text-2xl font-black uppercase">Instituto MÃ©dio de Economia de Luanda</h1>
-           <p className="font-bold">Boletim Trimestral de Aproveitamento AcadÃ©mico</p>
+           <h1 className="text-2xl font-black uppercase">Instituto Médio de Economia de Luanda</h1>
+           <p className="font-bold">Boletim Trimestral de Aproveitamento Académico</p>
            <div className="mt-8 flex justify-between text-left text-[10px] uppercase font-bold">
              <div><span>ALUNO:</span> {activeStudent?.name}</div>
              <div><span>PROCESSO:</span> {activeStudent?.processNumber}</div>
@@ -111,24 +111,24 @@ const GradesPage: React.FC = () => {
             <thead>
               <tr className="bg-slate-50 dark:bg-slate-900/50 border-b border-slate-100 dark:border-slate-700">
                 <th rowSpan={2} className="px-8 py-6 text-left text-xs font-black text-slate-400 uppercase tracking-widest min-w-[200px]">Disciplina</th>
-                <th colSpan={4} className="px-4 py-3 text-xs font-black text-primary uppercase border-x border-slate-100 dark:border-slate-700">1Âº Trimestre</th>
-                <th colSpan={4} className="px-4 py-3 text-xs font-black text-slate-300 uppercase border-x border-slate-100 dark:border-slate-700">2Âº Trimestre</th>
-                <th colSpan={4} className="px-4 py-3 text-xs font-black text-slate-300 uppercase border-x border-slate-100 dark:border-slate-700">3Âº Trimestre</th>
+                <th colSpan={4} className="px-4 py-3 text-xs font-black text-primary uppercase border-x border-slate-100 dark:border-slate-700">1º Trimestre</th>
+                <th colSpan={4} className="px-4 py-3 text-xs font-black text-slate-300 uppercase border-x border-slate-100 dark:border-slate-700">2º Trimestre</th>
+                <th colSpan={4} className="px-4 py-3 text-xs font-black text-slate-300 uppercase border-x border-slate-100 dark:border-slate-700">3º Trimestre</th>
                 <th rowSpan={2} className="px-4 py-3 text-xs font-black text-slate-400 uppercase">Faltas</th>
               </tr>
               <tr className="bg-slate-50/50 dark:bg-slate-900/30 border-b border-slate-100 dark:border-slate-700">
                 <th className="px-2 py-3 text-[9px] font-black text-slate-400">MAC</th>
                 <th className="px-2 py-3 text-[9px] font-black text-slate-400">NPP</th>
                 <th className="px-2 py-3 text-[9px] font-black text-slate-400">NPT</th>
-                <th className="px-2 py-3 text-[9px] font-black text-primary">MÃ‰D</th>
+                <th className="px-2 py-3 text-[9px] font-black text-primary">MÉD</th>
                 <th className="px-2 py-3 text-[9px] font-black text-slate-300 border-l border-slate-100">MAC</th>
                 <th className="px-2 py-3 text-[9px] font-black text-slate-300">NPP</th>
                 <th className="px-2 py-3 text-[9px] font-black text-slate-300">NPT</th>
-                <th className="px-2 py-3 text-[9px] font-black text-slate-300">MÃ‰D</th>
+                <th className="px-2 py-3 text-[9px] font-black text-slate-300">MÉD</th>
                 <th className="px-2 py-3 text-[9px] font-black text-slate-300 border-l border-slate-100">MAC</th>
                 <th className="px-2 py-3 text-[9px] font-black text-slate-300">NPP</th>
                 <th className="px-2 py-3 text-[9px] font-black text-slate-300">NPT</th>
-                <th className="px-2 py-3 text-[9px] font-black text-slate-300">MÃ‰D</th>
+                <th className="px-2 py-3 text-[9px] font-black text-slate-300">MÉD</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50 dark:divide-slate-700">
@@ -168,7 +168,7 @@ const GradesPage: React.FC = () => {
          <div className="flex items-center gap-4">
            <ShieldCheck size={32} className="text-primary" />
            <div>
-             <p className="font-bold text-slate-800 dark:text-white uppercase text-sm">AutenticaÃ§Ã£o SIG-IMEL</p>
+             <p className="font-bold text-slate-800 dark:text-white uppercase text-sm">Autenticação SIG-IMEL</p>
              <p className="text-[10px] text-slate-500 font-mono">HASH: {Math.random().toString(36).substring(2).toUpperCase()}</p>
            </div>
          </div>
@@ -189,3 +189,4 @@ const GradesPage: React.FC = () => {
 };
 
 export default GradesPage;
+

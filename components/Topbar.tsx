@@ -90,12 +90,12 @@ const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
           {showNotifs && (
             <div className="absolute right-0 mt-4 w-72 md:w-80 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-3xl shadow-2xl overflow-hidden animate-fade">
               <div className="p-4 md:p-6 bg-slate-50 dark:bg-slate-900/50 flex items-center justify-between border-b border-slate-100 dark:border-slate-700">
-                <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">NotificaÃ§Ãµes</span>
+                <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Notificações</span>
                 <span className="text-[9px] bg-primary text-white px-2 py-0.5 rounded-full">{unreadCount} Novas</span>
               </div>
               <div className="max-h-[300px] overflow-y-auto scrollbar-hide">
                 {notifications.length === 0 ? (
-                  <div className="p-10 text-center text-slate-300 italic text-sm font-bold">Sem notificaÃ§Ãµes</div>
+                  <div className="p-10 text-center text-slate-300 italic text-sm font-bold">Sem notificações</div>
                 ) : (
                   notifications.map(n => (
                     <div 
@@ -135,3 +135,4 @@ const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
 };
 
 export default Topbar;
+

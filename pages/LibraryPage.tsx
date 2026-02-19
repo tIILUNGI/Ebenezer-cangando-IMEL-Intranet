@@ -99,7 +99,7 @@ const LibraryPage: React.FC = () => {
           <h1 className="text-3xl font-black text-slate-900 dark:text-white flex items-center gap-3">
             <BookOpen className="text-primary" /> Biblioteca Digital IMEL
           </h1>
-          <p className="text-slate-500 dark:text-slate-400">Reposit√≥rio oficial de livros, pautas e manuais do curso.</p>
+          <p className="text-slate-500 dark:text-slate-400">RepositÛrio oficial de livros, pautas e manuais do curso.</p>
         </div>
         
         <div className="flex items-center gap-3">
@@ -172,7 +172,7 @@ const LibraryPage: React.FC = () => {
                     <option value="">Selecionar...</option>
                     <option value="TLP">TLP</option>
                     <option value="TRECE">TRECE</option>
-                    <option value="Matem√°tica">Matem√°tica</option>
+                    <option value="Matem·tica">Matem·tica</option>
                     <option value="SI">SI</option>
                     <option value="Geral">Manual Institucional</option>
                   </select>
@@ -203,3 +203,4 @@ const LibraryPage: React.FC = () => {
 };
 
 export default LibraryPage;
+

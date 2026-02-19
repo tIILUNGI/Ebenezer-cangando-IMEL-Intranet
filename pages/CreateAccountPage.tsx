@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { ArrowRight, ArrowLeft, CheckCircle2, User, Mail, Lock } from 'lucide-react';
 import { useDatabase } from '../App';
@@ -10,7 +10,9 @@ const CreateAccountPage: React.FC = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
   const [error, setError] = useState('');
+  const [isSendingWelcome, setIsSendingWelcome] = useState(false);
   const navigate = useNavigate();
   const { users, updateUser } = useDatabase();
 
@@ -26,20 +28,49 @@ const CreateAccountPage: React.FC = () => {
     setStep(2);
   };
 
-  const handleFinish = (e: React.FormEvent) => {
+  const sendWelcomeMessage = async (payload: { phone: string; email: string; name: string; role: string }) => {
+    const response = await fetch('/.netlify/functions/send-welcome', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ...payload, channels: ['whatsapp', 'sms'] })
+    });
+    if (!response.ok) {
+      const data = await response.json().catch(() => ({}));
+      throw new Error(data?.message || 'Falha no envio de boas-vindas.');
+    }
+  };
+
+  const handleFinish = async (e: React.FormEvent) => {
     e.preventDefault();
     if (password.length < 6) {
       setError('A senha deve ter no mínimo 6 caracteres.');
+      return;
+    }
+    if (password === foundUser.processNumber) {
+      setError('A senha deve ser diferente do número de processo.');
       return;
     }
     if (password !== confirmPassword) {
       setError('As senhas não coincidem.');
       return;
     }
+    if (!phone.trim()) {
+      setError('Informe o número de telemóvel para receber SMS e WhatsApp.');
+      return;
+    }
 
-    updateUser(foundUser.id, { email, password, isActive: true }, foundUser.name);
-    setStep(3);
-    window.setTimeout(() => navigate('/login'), 1200);
+    setError('');
+    setIsSendingWelcome(true);
+    updateUser(foundUser.id, { email, phone: phone.trim(), password, isActive: true }, foundUser.name);
+    try {
+      await sendWelcomeMessage({ phone: phone.trim(), email, name: foundUser.name, role: foundUser.role });
+      setStep(3);
+      window.setTimeout(() => navigate('/login'), 1200);
+    } catch (err: any) {
+      setError(err?.message || 'Não foi possível enviar a mensagem de boas-vindas.');
+    } finally {
+      setIsSendingWelcome(false);
+    }
   };
 
   return (
@@ -111,6 +142,17 @@ const CreateAccountPage: React.FC = () => {
                     />
                   </div>
                 </div>
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-bold text-slate-700 mb-2">Telemóvel (WhatsApp/SMS)</label>
+                  <input 
+                    type="tel" 
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    placeholder="Ex: +244 9xx xxx xxx"
+                    className="w-full px-6 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:border-[#003366] focus:bg-white transition-all outline-none"
+                    required
+                  />
+                </div>
                 <div>
                   <label className="block text-sm font-bold text-slate-700 mb-2">Criar Senha</label>
                   <div className="relative">
@@ -153,9 +195,10 @@ const CreateAccountPage: React.FC = () => {
 
               <button 
                 type="submit"
+                disabled={isSendingWelcome}
                 className="w-full bg-[#003366] text-white py-5 rounded-2xl font-bold text-lg hover:bg-blue-900 transition-all"
               >
-                Concluir Cadastro
+                {isSendingWelcome ? 'A enviar boas-vindas...' : 'Concluir Cadastro'}
               </button>
             </form>
           </div>
@@ -178,3 +221,4 @@ const CreateAccountPage: React.FC = () => {
 };
 
 export default CreateAccountPage;
+

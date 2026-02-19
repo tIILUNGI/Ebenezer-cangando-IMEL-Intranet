@@ -1,7 +1,6 @@
-
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { useSystemAdmin, useSettings } from '../App';
-import { Palette, Globe, Save, RefreshCw, AlertCircle } from 'lucide-react';
+import { Palette, Globe, Save, RefreshCw, AlertCircle, X } from 'lucide-react';
 import { DEFAULT_PRIMARY_COLOR, DEFAULT_SECONDARY_COLOR, DEFAULT_SCHOOL_NAME, DEFAULT_SCHOOL_ACRONYM } from '../constants';
 
 const BrandingPage: React.FC = () => {
@@ -9,6 +8,9 @@ const BrandingPage: React.FC = () => {
   const { t } = useSettings();
   const [formData, setFormData] = useState({ ...settings });
   const [isSaving, setIsSaving] = useState(false);
+  const [showReset, setShowReset] = useState(false);
+  const [resetReady, setResetReady] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   const handleSave = () => {
     setIsSaving(true);
@@ -30,6 +32,20 @@ const BrandingPage: React.FC = () => {
     }
   };
 
+  const handleResetLocalData = () => {
+    if (!resetReady) {
+      setResetReady(true);
+      return;
+    }
+    setShowConfirm(true);
+  };
+
+  const confirmReset = () => {
+    const keys = Object.keys(localStorage).filter(k => k.startsWith('imel_db_') || k === 'imel_user');
+    keys.forEach(k => localStorage.removeItem(k));
+    window.location.href = '#/login';
+  };
+
   return (
     <div className="max-w-4xl space-y-8 animate-fade">
       <div>
@@ -37,7 +53,7 @@ const BrandingPage: React.FC = () => {
           <Palette className="text-primary" />
           Marca do Sistema
         </h1>
-        <p className="text-slate-500 dark:text-slate-400">Configure a identidade visual e o nome da instituição para todos os usuários.</p>
+        <p className="text-slate-500 dark:text-slate-400">Configure a identidade visual e o nome da instituição para todos os utilizadores.</p>
       </div>
 
       <div className="grid md:grid-cols-2 gap-8">
@@ -107,7 +123,7 @@ const BrandingPage: React.FC = () => {
         <AlertCircle className="text-primary shrink-0" size={24} />
         <div>
           <p className="font-bold text-primary tracking-tight">Alterações em Tempo Real</p>
-          <p className="text-sm text-slate-600 dark:text-slate-400">As mudanças de cores e nomes refletem instantaneamente no cabeçalho, barra lateral e em todas as telas de todos os usuários logados no sistema.</p>
+          <p className="text-sm text-slate-600 dark:text-slate-400">As mudanças de cores e nomes refletem instantaneamente no cabeçalho, barra lateral e em todas as telas.</p>
         </div>
       </div>
 
@@ -126,7 +142,45 @@ const BrandingPage: React.FC = () => {
         >
           Resetar Padrão Original
         </button>
+        <button
+          onClick={() => setShowReset(!showReset)}
+          className="w-full sm:w-auto px-8 py-5 border border-red-200 text-red-600 rounded-2xl font-bold hover:bg-red-50 transition-all"
+        >
+          Resetar Dados Locais
+        </button>
       </div>
+
+      {showReset && (
+        <div className="p-6 bg-red-50 border border-red-200 rounded-3xl space-y-3">
+          <p className="font-bold text-red-700">Atenção: isto apaga todos os dados locais (utilizadores, mensagens, biblioteca, etc).</p>
+          <p className="text-sm text-red-600">Depois de apagar, não há como recuperar.</p>
+          <button
+            onClick={handleResetLocalData}
+            className="px-6 py-3 bg-red-600 text-white rounded-xl font-bold"
+          >
+            {resetReady ? 'Confirmar Reset Local' : 'Clique de Novo para Confirmar'}
+          </button>
+        </div>
+      )}
+
+      {showConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+          <div className="bg-white dark:bg-slate-800 w-full max-w-md rounded-3xl shadow-2xl overflow-hidden">
+            <div className="px-8 py-6 bg-red-600 text-white flex items-center justify-between">
+              <h3 className="text-lg font-black">Confirmação Final</h3>
+              <button onClick={() => setShowConfirm(false)}><X /></button>
+            </div>
+            <div className="p-8 space-y-4">
+              <p className="text-slate-700 dark:text-slate-200 font-bold">Esta ação vai apagar TODOS os dados locais.</p>
+              <p className="text-slate-500">Não poderá recuperar depois.</p>
+              <div className="flex gap-3 pt-4">
+                <button onClick={() => setShowConfirm(false)} className="flex-1 py-3 border border-slate-200 rounded-xl font-bold">Cancelar</button>
+                <button onClick={confirmReset} className="flex-1 py-3 bg-red-600 text-white rounded-xl font-bold">Apagar Agora</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

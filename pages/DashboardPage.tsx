@@ -1,14 +1,12 @@
-
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
 import { 
   Users, GraduationCap, TrendingUp, AlertCircle, CheckCircle2, 
   Activity, Globe, Calendar, BrainCircuit, MessageSquare, Send, ShieldCheck, Server, Key, Database, FileText, Zap
 } from 'lucide-react';
 import { useAuth, useSettings, useSystemAdmin, useDatabase } from '../App';
-// Fixed: Removed 'Type' which is not exported from '../types'
 import { UserRole, AIInsight } from '../types';
-// Fixed: Using 'Type' directly from '@google/genai' as per guidelines, avoiding 'SchemaType'
 import { GoogleGenAI, Type } from "@google/genai";
 
 const StatCard: React.FC<{ icon: any, label: string, value: string, trend?: string, color: string }> = ({ icon: Icon, label, value, trend, color }) => (
@@ -33,11 +31,11 @@ const DashboardPage: React.FC = () => {
   const { theme, t } = useSettings();
   const { settings } = useSystemAdmin();
   const { grades, users, auditLogs } = useDatabase();
+  const navigate = useNavigate();
   
   const [aiInsight, setAiInsight] = useState<AIInsight | null>(null);
   const [isAiLoading, setIsAiLoading] = useState(false);
-  const [aiQuestion, setAiQuestion] = useState('');
-  const [aiAnswer, setAiAnswer] = useState('');
+  const geminiApiKey = import.meta.env.VITE_GEMINI_API_KEY;
 
   const isDiretor = user?.role === UserRole.DIRETOR;
   const isAdmin = user?.role === UserRole.ADMIN;
@@ -54,7 +52,8 @@ const DashboardPage: React.FC = () => {
   const generateAIInsight = async () => {
     setIsAiLoading(true);
     try {
-      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+      if (!geminiApiKey) throw new Error('Chave GEMINI_API_KEY em falta.');
+      const ai = new GoogleGenAI({ apiKey: geminiApiKey });
       const context = isDiretor 
         ? "Análise estratégica global: 2450 alunos, 88% aprovação, 154 alunos em risco."
         : isProfessor 
@@ -67,7 +66,6 @@ const DashboardPage: React.FC = () => {
         config: {
           responseMimeType: "application/json",
           responseSchema: {
-            // Fixed: Use 'Type' from '@google/genai' instead of 'SchemaType'
             type: Type.OBJECT,
             properties: {
               content: { type: Type.STRING, description: "A frase do insight" },
@@ -93,27 +91,14 @@ const DashboardPage: React.FC = () => {
     }
   };
 
-  const askAiAboutSystem = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!aiQuestion.trim()) return;
-    setIsAiLoading(true);
-    try {
-      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-      const response = await ai.models.generateContent({
-        model: 'gemini-3-flash-preview',
-        contents: `Você é assistente do sistema escolar IMEL. Responda de forma curta e prática. Pergunta do usuário: ${aiQuestion}`
-      });
-      setAiAnswer(response.text || 'Sem resposta no momento.');
-    } catch (error) {
-      setAiAnswer('Não foi possível consultar a IA agora. Verifique a chave GEMINI_API_KEY.');
-    } finally {
-      setIsAiLoading(false);
-    }
-  };
 
   useEffect(() => {
     generateAIInsight();
   }, [user, activeStudent]);
+
+  const handleSecretaria = () => {
+    navigate('/mensagens?to=sec-1');
+  };
 
   const renderDirectorKPIs = () => (
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 animate-fade">
@@ -153,7 +138,7 @@ const DashboardPage: React.FC = () => {
               <BrainCircuit className="text-primary dark:text-secondary w-5 h-5 sm:w-6 sm:h-6" />
             </div>
             <div className="overflow-hidden">
-              <p className="text-[9px] font-black uppercase tracking-widest opacity-60">AI Insights</p>
+              <p className="text-[9px] font-black uppercase tracking-widest opacity-60">Insights IA</p>
               <p className="text-[10px] sm:text-xs font-black leading-tight line-clamp-2">{aiInsight.content}</p>
             </div>
           </div>
@@ -249,32 +234,15 @@ const DashboardPage: React.FC = () => {
               <MessageSquare size={20} /> Gabinete Online
             </h3>
             <div className="space-y-3">
-               <button className="w-full p-4 bg-white/10 rounded-2xl flex items-center justify-between hover:bg-white/20 transition-all border border-white/5">
+               <button onClick={handleSecretaria} className="w-full p-4 bg-white/10 rounded-2xl flex items-center justify-between hover:bg-white/20 transition-all border border-white/5">
                  <span className="text-[10px] font-black uppercase tracking-widest truncate mr-2">Secretaria Académica</span>
                  <Send size={14} className="shrink-0" />
-               </button>               <a href="https://wa.me/244938229459" target="_blank" rel="noopener noreferrer" className="w-full p-4 bg-white/10 rounded-2xl flex items-center justify-between hover:bg-white/20 transition-all border border-white/5">
+               </button>
+               <a href="https://wa.me/244938229459" target="_blank" rel="noopener noreferrer" className="w-full p-4 bg-white/10 rounded-2xl flex items-center justify-between hover:bg-white/20 transition-all border border-white/5">
                  <span className="text-[10px] font-black uppercase tracking-widest truncate mr-2">Apoio Técnico (TI)</span>
                  <Send size={14} className="shrink-0" />
                </a>
             </div>
-          </div>
-
-          <div className="bg-white dark:bg-slate-800 p-6 sm:p-8 rounded-[2rem] sm:rounded-[2.5rem] border border-slate-100 dark:border-slate-700 shadow-sm">
-            <h3 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
-              <BrainCircuit className="text-primary" size={20} /> Assistente IA do Sistema
-            </h3>
-            <form onSubmit={askAiAboutSystem} className="space-y-3">
-              <input
-                value={aiQuestion}
-                onChange={(e) => setAiQuestion(e.target.value)}
-                placeholder="Pergunte sobre funcionalidades do sistema"
-                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:border-primary text-sm"
-              />
-              <button type="submit" disabled={isAiLoading} className="w-full py-3 bg-primary text-white rounded-xl font-black text-xs uppercase tracking-widest disabled:opacity-60">
-                {isAiLoading ? 'A processar...' : 'Perguntar Ã  IA'}
-              </button>
-            </form>
-            {aiAnswer && <p className="mt-4 text-sm text-slate-600 dark:text-slate-300 leading-relaxed">{aiAnswer}</p>}
           </div>
 
           <div className="bg-white dark:bg-slate-800 p-8 rounded-[2rem] sm:rounded-[2.5rem] border border-slate-100 dark:border-slate-700 shadow-sm text-center">
@@ -287,11 +255,9 @@ const DashboardPage: React.FC = () => {
           </div>
         </div>
       </div>
+
     </div>
   );
 };
 
 export default DashboardPage;
-
-
-

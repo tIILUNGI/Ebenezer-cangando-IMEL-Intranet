@@ -7,7 +7,7 @@ import { UserRole } from '../types';
 const SchedulePage: React.FC = () => {
   const { schedules } = useDatabase();
   const { user } = useAuth();
-  const days = ['Segunda', 'TerÃ§a', 'Quarta', 'Quinta', 'Sexta'];
+  const days = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta'];
 
   // Se for professor, filtrar apenas as aulas dele
   const displaySchedules = user?.role === UserRole.PROFESSOR 
@@ -18,10 +18,10 @@ const SchedulePage: React.FC = () => {
     <div className="space-y-8 animate-fade">
       <div>
         <h1 className="text-3xl font-black text-slate-900 dark:text-white">
-          {user?.role === UserRole.PROFESSOR ? 'Meu HorÃ¡rio de Aulas' : 'HorÃ¡rio Escolar'}
+          {user?.role === UserRole.PROFESSOR ? 'Meu Horário de Aulas' : 'Horário Escolar'}
         </h1>
         <p className="text-slate-500 dark:text-slate-400">
-          {user?.role === UserRole.PROFESSOR ? `SessÃµes atribuÃ­das ao docente ${user.name}` : 'Turma 12Âª B | InformÃ¡tica de GestÃ£o'}
+          {user?.role === UserRole.PROFESSOR ? `Sessões atribuídas ao docente ${user.name}` : 'Turma 12ª B | Informática de Gestão'}
         </p>
       </div>
 
@@ -60,3 +60,4 @@ const SchedulePage: React.FC = () => {
 };
 
 export default SchedulePage;
+

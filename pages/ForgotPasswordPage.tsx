@@ -18,7 +18,7 @@ const ForgotPasswordPage: React.FC = () => {
     e.preventDefault();
     const found = users.find(u => u.processNumber === identifier || u.email === identifier);
     if (!found) {
-      setError('NÃ£o foi possÃ­vel localizar esse processo/e-mail.');
+      setError('Não foi possível localizar esse processo/e-mail.');
       return;
     }
     const code = String(Math.floor(100000 + Math.random() * 900000));
@@ -31,11 +31,11 @@ const ForgotPasswordPage: React.FC = () => {
   const handleFinish = (e: React.FormEvent) => {
     e.preventDefault();
     if (codeInput !== verificationCode) {
-      setError('CÃ³digo invÃ¡lido.');
+      setError('Código inválido.');
       return;
     }
     if (newPassword.length < 6) {
-      setError('A nova senha deve ter no mÃ­nimo 6 caracteres.');
+      setError('A nova senha deve ter no mínimo 6 caracteres.');
       return;
     }
     updateUser(targetUserId, { password: newPassword, isActive: true }, 'Sistema');
@@ -63,7 +63,7 @@ const ForgotPasswordPage: React.FC = () => {
             </div>
             <h1 className="text-4xl font-black text-slate-900 dark:text-white mb-3">Recuperar Acesso</h1>
             <p className="text-slate-500 dark:text-slate-400 mb-10 font-medium leading-relaxed">
-              Introduza o seu nÃºmero de processo ou e-mail institucional.
+              Introduza o seu número de processo ou e-mail institucional.
             </p>
             
             <form onSubmit={handleResetRequest} className="space-y-8">
@@ -88,7 +88,7 @@ const ForgotPasswordPage: React.FC = () => {
                 type="submit"
                 className="w-full bg-primary text-white py-6 rounded-2xl font-black text-lg hover:shadow-2xl hover:scale-[1.01] active:scale-95 transition-all flex items-center justify-center gap-4 shadow-xl shadow-primary/20"
               >
-                SOLICITAR CÃ“DIGO <Send size={20} />
+                SOLICITAR CÓDIGO <Send size={20} />
               </button>
             </form>
           </div>
@@ -99,15 +99,15 @@ const ForgotPasswordPage: React.FC = () => {
             <div className="w-16 h-16 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-500 rounded-[1.5rem] flex items-center justify-center mb-8">
               <ShieldCheck size={32} />
             </div>
-            <h1 className="text-4xl font-black text-slate-900 dark:text-white mb-3">VerificaÃ§Ã£o</h1>
+            <h1 className="text-4xl font-black text-slate-900 dark:text-white mb-3">Verificação</h1>
             <p className="text-slate-500 dark:text-slate-400 mb-3 font-medium leading-relaxed">
-              CÃ³digo local gerado para recuperaÃ§Ã£o:
+              Código local gerado para recuperação:
             </p>
             <p className="text-2xl font-black text-primary mb-8 tracking-[0.35em]">{verificationCode}</p>
 
             <form onSubmit={handleFinish} className="space-y-6">
               <div>
-                <label className="block text-[10px] font-black text-slate-400 uppercase mb-3 tracking-[0.2em]">CÃ³digo de 6 DÃ­gitos</label>
+                <label className="block text-[10px] font-black text-slate-400 uppercase mb-3 tracking-[0.2em]">Código de 6 Dígitos</label>
                 <input 
                   type="text" 
                   maxLength={6}
@@ -127,7 +127,7 @@ const ForgotPasswordPage: React.FC = () => {
                     type="password" 
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
-                    placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
+                    placeholder="••••••••"
                     className="w-full pl-14 pr-6 py-5 bg-slate-50 dark:bg-slate-900 border-2 border-slate-100 dark:border-slate-700 rounded-2xl focus:border-primary outline-none font-bold"
                     required
                   />
@@ -163,3 +163,4 @@ const ForgotPasswordPage: React.FC = () => {
 };
 
 export default ForgotPasswordPage;
+

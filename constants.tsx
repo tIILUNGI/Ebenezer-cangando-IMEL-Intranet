@@ -1,9 +1,8 @@
-
-import { 
+﻿import { 
   LayoutDashboard, Users, ClipboardList, Calendar, FileText, MessageSquare, 
-  Settings, BarChart3, Library, History, Palette, Eye, Activity, Briefcase, 
-  FileBarChart, BookMarked, Clock, BookOpen, Bell, ShieldAlert, Zap, Globe, FileStack,
-  User as UserIcon
+  Settings, BarChart3, Palette, Activity, FileStack,
+  BookOpen, Zap, Globe, ShieldAlert,
+  User as UserIcon, Clock
 } from 'lucide-react';
 import { UserRole, SidebarItem, Grade, ClassSchedule, User } from './types';
 
@@ -15,7 +14,7 @@ export const DEFAULT_SCHOOL_ACRONYM = 'Intra IMEL';
 const generateUniqueMockStudents = (): User[] => {
   const students: User[] = [];
   const names = [
-    "João Manuel", "Ana Manuel", "Pedro Afonso", "Maria Diniz", "António Costa", 
+    "Alexandre Alfredo Tumbo", "Antonio Quissanga", "Pedro Afonso", "Maria Diniz", "António Costa", 
     "Beatriz Silva", "Carlos Jorge", "Daniela Bento", "Edgar Neto", "Feliciana Cruz",
     "Gabriel Luamba", "Helena Paulo", "Igor Gomes", "Janeth Faria", "Kevin Santos",
     "Lurdes Mendes", "Manuel Diogo", "Nádia Rocha", "Osvaldo Jamba", "Patrícia Lima",
@@ -28,10 +27,10 @@ const generateUniqueMockStudents = (): User[] => {
     students.push({
       id: `std-${index + 1}`,
       name: name,
-      processNumber: (2022450 + index).toString(),
+      processNumber: `aluno${index + 1}123`,
       role: UserRole.ALUNO,
       turma: 'I12B (Inf. Gestão)',
-      password: '123456',
+      password: `aluno${index + 1}123`,
       isActive: false
     });
   });
@@ -40,28 +39,25 @@ const generateUniqueMockStudents = (): User[] => {
 
 export const TEST_USERS: User[] = [
   ...generateUniqueMockStudents(),
-  { id: '2', name: 'Eng. Domingos Neto', processNumber: 'IT-3001', role: UserRole.PROFESSOR, password: '123456', isActive: true }, 
-  { id: '3', name: 'Admin Geral', processNumber: '999000', role: UserRole.ADMIN, password: '123456', isActive: true },
-  { id: '4', name: 'Dr. Augusto Feliciano', processNumber: '888000', role: UserRole.DIRETOR, password: '123456', isActive: true },
-  { id: '5', name: 'Pedro João', processNumber: '777000', role: UserRole.ENCARREGADO, studentIds: ['std-1', 'std-2'], password: '123456', isActive: true },
+  { id: '2', name: 'Eduardo Zamith', processNumber: 'professor123', role: UserRole.PROFESSOR, password: 'professor123', isActive: true }, 
+  { id: '3', name: 'Ebenezer Vilola', processNumber: 'admin123', role: UserRole.ADMIN, password: 'admin123', isActive: true },
+  { id: '4', name: 'Lizandro Sony', processNumber: 'diretor123', role: UserRole.DIRETOR, password: 'diretor123', isActive: true },
+  { id: '5', name: 'Ritá José', processNumber: 'encarregado123', role: UserRole.ENCARREGADO, studentIds: ['std-1', 'std-2'], password: 'encarregado123', isActive: false },
+  { id: 'sec-1', name: 'António Quissanga', processNumber: 'secretaria123', role: UserRole.ADMIN, password: 'secretaria123', isActive: true, turma: 'I12B (Inf. Gestão)' }
 ];
 
 export const SIDEBAR_LINKS: SidebarItem[] = [
-  // Aluno
   { icon: LayoutDashboard, label: 'Painel do Aluno', path: '/dashboard', roles: [UserRole.ALUNO] },
   { icon: FileText, label: 'Minhas Notas', path: '/notas', roles: [UserRole.ALUNO] },
   { icon: Clock, label: 'Minha Assiduidade', path: '/frequencia', roles: [UserRole.ALUNO] },
   { icon: Calendar, label: 'Horário de Aulas', path: '/horario', roles: [UserRole.ALUNO, UserRole.PROFESSOR] },
   
-  // Professor
   { icon: LayoutDashboard, label: 'Painel Docente', path: '/dashboard', roles: [UserRole.PROFESSOR] },
   { icon: ClipboardList, label: 'Lançar Notas', path: '/gestao-notas', roles: [UserRole.PROFESSOR] },
   
-  // Encarregado
   { icon: LayoutDashboard, label: 'Portal do Encarregado', path: '/dashboard', roles: [UserRole.ENCARREGADO] },
   { icon: FileText, label: 'Notas do Educando', path: '/notas', roles: [UserRole.ENCARREGADO] },
   
-  // DIRETOR GERAL
   { icon: LayoutDashboard, label: 'Gabinete Estratégico', path: '/dashboard', roles: [UserRole.DIRETOR] },
   { icon: BarChart3, label: 'Análise de Desempenho', path: '/stats', roles: [UserRole.DIRETOR] },
   { icon: Activity, label: 'Controlo Pedagógico', path: '/direcao/professores', roles: [UserRole.DIRETOR] },
@@ -70,17 +66,13 @@ export const SIDEBAR_LINKS: SidebarItem[] = [
   { icon: FileStack, label: 'Mapas Gerenciais', path: '/direcao/relatorios', roles: [UserRole.DIRETOR] },
   { icon: ShieldAlert, label: 'Logs de Segurança', path: '/direcao/auditoria', roles: [UserRole.DIRETOR, UserRole.ADMIN] },
 
-  // ADMINISTRADOR
   { icon: Zap, label: 'Consola de Gestão', path: '/dashboard', roles: [UserRole.ADMIN] },
   { icon: Users, label: 'Contas de Acesso', path: '/admin/usuarios', roles: [UserRole.ADMIN] },
   { icon: Palette, label: 'Identidade Visual', path: '/admin/branding', roles: [UserRole.ADMIN] },
   
-  // Definições Adaptativas
-  // Para ADMIN mostra configurações do sistema, para outros mostra Perfil
   { icon: UserIcon, label: 'Meu Perfil', path: '/perfil', roles: [UserRole.ALUNO, UserRole.PROFESSOR, UserRole.ENCARREGADO, UserRole.DIRETOR] },
   { icon: Settings, label: 'Definições do Sistema', path: '/admin/branding', roles: [UserRole.ADMIN] },
 
-  // Biblioteca (Todos)
   { icon: BookOpen, label: 'Biblioteca Digital', path: '/biblioteca', roles: Object.values(UserRole) },
   { icon: MessageSquare, label: 'Comunicação', path: '/mensagens', roles: Object.values(UserRole) },
 ];
@@ -88,16 +80,16 @@ export const SIDEBAR_LINKS: SidebarItem[] = [
 const generateMockGrades = (): Grade[] => {
   const allGrades: Grade[] = [];
   const subjects = [
-    { name: 'TLP (Prog. C#)', teacherId: '2' },
+    { name: 'TLP', teacherId: '2' },
     { name: 'TRECE (Redes)', teacherId: '2' },
     { name: 'Sistemas de Info.', teacherId: '99' },
     { name: 'Matemática', teacherId: '98' },
-    { name: 'Língua Portuguesa', teacherId: '96' },
-    { name: 'OGE', teacherId: '97' },
+    { name: 'Inglês Técnico', teacherId: '96' },
+    { name: 'IAG', teacherId: '97' },
     { name: 'Empreendedorismo', teacherId: '97' },
     { name: 'Inglês Técnico', teacherId: '95' },
-    { name: 'PAPE', teacherId: '2' },
-    { name: 'Educação Física', teacherId: '94' }
+    { name: 'OAE', teacherId: '2' },
+    { name: 'PT', teacherId: '94' }
   ];
 
   const students = generateUniqueMockStudents();
@@ -157,4 +149,7 @@ const generateFullSchedule = (): ClassSchedule[] => {
 };
 
 export const MOCK_SCHEDULE: ClassSchedule[] = generateFullSchedule();
+
+
+
 

@@ -1,99 +1,117 @@
+﻿# SIG-IMEL - Sistema Interno de Gestão Escolar
 
-# 🎓 SIG-IMEL - Sistema Interno de Gestão Escolar
-
-O **SIG-IMEL** é uma plataforma de intranet completa e moderna desenvolvida especificamente para o **Instituto Médio de Economia de Luanda**. O sistema centraliza a gestão académica, pedagógica e administrativa, conectando Alunos, Professores, Encarregados de Educação e a Direção Geral em um único ecossistema digital de alta performance.
-
----
-
-## 🚀 Funcionalidades Principais
-
-### 👤 Módulos por Perfil
-- **Alunos:** Consulta de mini-pautas, horários, assiduidade, acesso à biblioteca digital e comunicação com professores.
-- **Professores:** Lançamento de notas em tempo real, monitoramento de turmas, publicação de materiais e gestão de pautas.
-- **Encarregados:** Acompanhamento exclusivo do progresso académico e faltas de múltiplos educandos.
-- **Diretor Geral (Gabinete Estratégico):** Dashboard com KPIs de aprovação, análise de risco de abandono e auditoria pedagógica.
-- **Administrador (Consola de Gestão):** Controle total de contas, logs de segurança (auditoria) e personalização da identidade visual (Branding).
-
-### 🧠 Inteligência Artificial (AI Features)
-Integrado com a **Gemini API (Google GenAI)**, o sistema fornece:
-- **Análise Preditiva:** Insights automáticos sobre o desempenho das turmas.
-- **Alertas de Risco:** Identificação proativa de alunos com baixo rendimento ou excesso de faltas.
-- **Sugestões Pedagógicas:** Recomendações personalizadas baseadas nos dados do sistema.
-
-### 🛠️ Gestão Técnica
-- **Branding Dinâmico:** Alteração de cores primárias/secundárias e nomes da instituição sem mexer no código.
-- **Auditoria Imutável:** Registro detalhado de quem, quando e o que foi alterado no sistema (essencial para segurança de notas).
-- **Biblioteca Digital:** Upload e download de manuais, pautas em PDF e videoaulas.
+Frontend em React com persistência em `localStorage`. Sem backend.
 
 ---
 
-## 🛠️ Tecnologias Utilizadas
+## Checklist do Sistema
 
-- **Frontend:** React 19 (ES6+ Modules)
-- **Estilização:** Tailwind CSS (com suporte a Modo Escuro/Dark Mode)
-- **Ícones:** Lucide React (Design limpo e moderno)
-- **Gráficos:** Recharts (Visualização de dados estatísticos)
-- **Navegação:** React Router Dom v7
-- **IA:** @google/genai (Gemini 3 Flash Preview)
-- **Banco de Dados:** MySQL 8.0 (Esquema relacional completo)
+### Autenticação e Perfis
+- [x] Login com senha e conta ativa
+- [x] Criação de conta (ativa utilizador e grava e-mail/senha/telemóvel)
+- [x] Recuperação de senha (código local + atualização)
+- [x] Troca de senha no perfil com validação
+
+### Comunicação e Mensagens
+- [x] Mensagens persistentes no `localStorage`
+- [x] Mensagens aparecem no destinatário após logout/login
+- [x] Filtro de destinatários: não mostra o logado
+- [x] Filtro por turma: só mesma turma aparece
+
+### Biblioteca Digital
+- [x] Upload real de arquivo (base64 no `localStorage`)
+- [x] Download real de arquivo
+- [x] Contador de downloads
+
+### Notas e Pautas
+- [x] Lançamento de notas com cálculo de média
+- [x] Boletim com download (arquivo local)
+
+### Auditoria e Logs
+- [x] Logs de ações (criar/alterar utilizador, notas, mensagens, biblioteca)
+
+### IA e Interação
+- [x] Insight automático no dashboard
+- [x] Perguntas à IA sobre o sistema (botão global)
+
+### Suporte
+- [x] WhatsApp abre diretamente: `+244 938 229 459`
+
+### Ano Lectivo
+- [x] Atualizado para `2025/2026`
 
 ---
 
-## 📦 Instalação e Configuração
+## Credenciais de Acesso
 
-### 1. Pré-requisitos
-- Um servidor web ou ambiente de desenvolvimento local (como Node.js ou VS Code com Live Server).
-- Uma chave de API do Google Gemini (obrigatória para as funcionalidades de IA).
+### Admin
+- Processo: `admin123`
+- Senha: `admin123`
+- Nome: Ebenezer Vilola
 
-### 2. Configuração do Banco de Dados
-Execute o script localizado em `database.sql` no seu servidor MySQL. Ele criará:
-- A base de dados `imel_intranet_db`.
-- Todas as tabelas necessárias (usuários, pautas, disciplinas, horários, logs, etc).
-- Dados iniciais (Disciplinas e conta de Administrador Padrão).
+### Professor
+- Processo: `professor123`
+- Senha: `professor123`
+- Nome: Eduardo Zamith
 
-### 3. Configuração do Ambiente
-O sistema utiliza variáveis de ambiente para segurança. Certifique-se de configurar a sua chave da Gemini API:
-```env
-API_KEY=sua_chave_aqui
+### Diretor
+- Processo: `diretor123`
+- Senha: `diretor123`
+- Nome: Lizandro Sony
+
+### Encarregado
+- Processo: `encarregado123`
+- Senha: `encarregado123`
+- Nome: Ritá José
+
+### Secretaria Académica
+- Processo: `secretaria123`
+- Senha: `secretaria123`
+- Nome: António Quissanga
+
+### Alunos
+- Processos: `aluno1`...`aluno35` com padrão `alunoN123`
+- Senha: igual ao processo (ex: `aluno1123`)
+- Estado: inativos até "Criar conta"
+
+---
+
+## Execução Local
+
+```bash
+npm install
+npm run dev
 ```
-*Nota: Em ambientes de desenvolvimento como este, a chave é injetada automaticamente via `process.env.API_KEY`.*
-
-### 4. Execução
-Como o projeto utiliza módulos ES6 nativos e `importmap`, não é necessário um passo de "build" pesado para visualização simples:
-1. Abra o arquivo `index.html` em um navegador moderno.
-2. Certifique-se de usar um servidor local (não abra o arquivo diretamente via `file://`) para que as rotas e módulos funcionem corretamente.
 
 ---
 
-## 📖 Guia de Uso
+## Deploy no Netlify
 
-### Acesso Inicial
-- **Login:** Utilize o Número de Processo fornecido pela secretaria.
-- **Primeiro Acesso:** Clique em "Criar conta agora", insira seu processo e defina uma senha e e-mail.
-- **Recuperação:** Se esquecer a senha, utilize o fluxo "Esqueceu a senha?" para redefinir via e-mail institucional.
+Arquivo `netlify.toml` já configurado:
 
-### Lançamento de Notas (Professores)
-1. Vá até "Lançar Notas".
-2. Filtre por disciplina.
-3. Clique em "Lançar", insira os valores de MAC, NPP ou NPT.
-4. O sistema calcula a média automaticamente e salva o log de alteração.
+```toml
+[build]
+  command = "npm run build"
+  publish = "dist"
+  functions = "netlify/functions"
 
-### Painel da Direção
-- Acesse o "Gabinete Estratégico" para ver os gráficos de barras e áreas que mostram a saúde acadêmica do instituto. Use os insights da IA no topo para decisões rápidas.
+[build.environment]
+  NODE_VERSION = "20"
+  VITE_GEMINI_API_KEY = "REPLACE_ME"
+```
 
----
+Configurar no painel do Netlify:
+- `VITE_GEMINI_API_KEY`
 
-## 🛡️ Segurança e Privacidade
-O SIG-IMEL segue rigorosos padrões de proteção de dados:
-- **Hashes de Senha:** Nunca armazenamos senhas em texto limpo.
-- **Auditoria Centralizada:** Cada clique administrativo é registrado.
-- **Níveis de Acesso:** Um Aluno jamais terá acesso às rotas de edição de notas ou logs de sistema.
-
----
-
-## 📝 Créditos
-Desenvolvido para o **Instituto Médio de Economia de Luanda (IMEL)**.
-Sistema focado na modernização do Ensino Técnico-Profissional em Angola.
+### Envio de Boas-Vindas (SMTP)
+Configurar no painel do Netlify:
+- `SMTP_HOST`
+- `SMTP_PORT`
+- `SMTP_USER`
+- `SMTP_PASS`
+- `SMTP_FROM`
 
 ---
-*Versão do Sistema: 3.0.0-*
+
+## Observação Técnica
+Os dados são armazenados localmente no navegador (`localStorage`). Para um ambiente multiutilizador real, é necessário backend e base de dados.

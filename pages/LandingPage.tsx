@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   ShieldCheck, 
@@ -24,17 +23,31 @@ const LandingPage: React.FC = () => {
   const { theme, t } = useSettings();
   const { settings } = useSystemAdmin();
   const [formSent, setFormSent] = useState(false);
+  const [contactName, setContactName] = useState('');
+  const [contactEmail, setContactEmail] = useState('');
+  const [contactMessage, setContactMessage] = useState('');
 
   const handleContactSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    const tickets = JSON.parse(localStorage.getItem('imel_db_contact_messages') || '[]');
+    tickets.unshift({
+      id: Date.now().toString(),
+      name: contactName,
+      email: contactEmail,
+      message: contactMessage,
+      createdAt: new Date().toLocaleString()
+    });
+    localStorage.setItem('imel_db_contact_messages', JSON.stringify(tickets.slice(0, 200)));
     setFormSent(true);
-    setTimeout(() => setFormSent(false), 5000);
+    setContactName('');
+    setContactEmail('');
+    setContactMessage('');
   };
 
   return (
     <div className="min-h-screen bg-white dark:bg-slate-900 transition-colors duration-300">
       {/* Barra de Navegação */}
-      <nav className="px-8 py-6 flex items-center justify-between max-w-7xl mx-auto sticky top-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md z-50">
+      <nav className="px-4 sm:px-6 lg:px-8 py-5 sm:py-6 flex items-center justify-between max-w-7xl mx-auto sticky top-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md z-50">
         <div className="flex items-center gap-3">
           <div className="p-2 bg-primary rounded-xl">
             <GraduationCap className="text-secondary w-6 h-6" />
@@ -53,7 +66,7 @@ const LandingPage: React.FC = () => {
           
           <Link 
             to="/login" 
-            className="px-8 py-3 bg-primary text-white rounded-xl text-sm font-black shadow-lg hover:scale-105 active:scale-95 transition-all"
+            className="px-6 sm:px-8 py-3 bg-primary text-white rounded-xl text-sm font-black shadow-lg hover:scale-105 active:scale-95 transition-all"
           >
             {t('login_btn')}
           </Link>
@@ -61,27 +74,27 @@ const LandingPage: React.FC = () => {
       </nav>
 
       {/* Hero Section */}
-      <header className="relative pt-16 pb-28 overflow-hidden">
-        <div className="max-w-7xl mx-auto px-8 grid lg:grid-cols-2 gap-20 items-center">
+      <header className="relative pt-12 sm:pt-16 pb-20 sm:pb-28 overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
           <div className="z-10 text-center lg:text-left">
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 dark:bg-blue-900/20 text-primary rounded-full text-xs font-black mb-8 uppercase tracking-widest">
               <Zap size={14} className="text-secondary" /> Plataforma Digital Oficial
             </div>
-            <h1 className="text-5xl lg:text-7xl font-black text-slate-900 dark:text-white leading-[1.1] mb-8">
+            <h1 className="text-4xl sm:text-5xl lg:text-7xl font-black text-slate-900 dark:text-white leading-[1.1] mb-6 sm:mb-8">
               Gestão Escolar <br />
               <span className="text-primary dark:text-secondary italic">Inteligente</span>
             </h1>
-            <p className="text-xl text-slate-600 dark:text-slate-400 mb-12 leading-relaxed max-w-xl mx-auto lg:mx-0">
+            <p className="text-lg sm:text-xl text-slate-600 dark:text-slate-400 mb-8 sm:mb-12 leading-relaxed max-w-xl mx-auto lg:mx-0">
               Aceda a notas, horários, recursos didácticos e comunique com a instituição através de uma plataforma centralizada e moderna.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
               <Link 
                 to="/login" 
-                className="flex items-center justify-center gap-3 px-10 py-5 bg-primary text-white rounded-2xl text-lg font-black shadow-2xl hover:translate-y-[-2px] transition-all group"
+                className="flex items-center justify-center gap-3 px-8 sm:px-10 py-4 sm:py-5 bg-primary text-white rounded-2xl text-base sm:text-lg font-black shadow-2xl hover:translate-y-[-2px] transition-all group"
               >
                 {t('start_now')} <ArrowRight className="group-hover:translate-x-1 transition-transform" />
               </Link>
-              <a href="#features" className="px-10 py-5 bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-2xl text-lg font-black hover:bg-slate-50 transition-all text-center">
+              <a href="#features" className="px-8 sm:px-10 py-4 sm:py-5 bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-2xl text-base sm:text-lg font-black hover:bg-slate-50 transition-all text-center">
                 Saber Mais
               </a>
             </div>
@@ -91,7 +104,7 @@ const LandingPage: React.FC = () => {
               <img 
                 src="https://tecpleta.com/midias/noticias/584979.jpg" 
                 alt={settings.schoolName} 
-                className="w-full h-[600px] object-cover"
+                className="w-full h-[460px] xl:h-[600px] object-cover"
               />
               <div className="absolute inset-0 bg-primary/10"></div>
             </div>
@@ -100,8 +113,8 @@ const LandingPage: React.FC = () => {
       </header>
 
       {/* Funcionalidades */}
-      <section id="features" className="py-24 bg-slate-50 dark:bg-slate-800/20 transition-colors scroll-mt-20">
-        <div className="max-w-7xl mx-auto px-8">
+      <section id="features" className="py-20 sm:py-24 bg-slate-50 dark:bg-slate-800/20 transition-colors scroll-mt-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-20">
             <h2 className="text-4xl lg:text-5xl font-black text-slate-900 dark:text-white mb-6 uppercase tracking-tight">{t('features')}</h2>
             <p className="text-slate-500 max-w-3xl mx-auto text-lg italic">Uma infraestrutura digital completa para suprir as necessidades de toda a comunidade académica.</p>
@@ -127,7 +140,7 @@ const LandingPage: React.FC = () => {
       </section>
 
       {/* Vantagens */}
-      <section id="advantages" className="py-24 max-w-7xl mx-auto px-8 scroll-mt-20">
+      <section id="advantages" className="py-20 sm:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 scroll-mt-20">
         <div className="grid lg:grid-cols-2 gap-20 items-center">
           <div>
             <div className="inline-flex items-center gap-2 bg-secondary/10 px-4 py-1.5 rounded-full text-xs font-black mb-6 text-primary uppercase">
@@ -180,12 +193,12 @@ const LandingPage: React.FC = () => {
       </section>
 
       {/* Localização & Contacto */}
-      <section id="location" className="py-24 bg-slate-50 dark:bg-slate-800/40 transition-colors scroll-mt-20">
-        <div className="max-w-7xl mx-auto px-8">
+      <section id="location" className="py-20 sm:py-24 bg-slate-50 dark:bg-slate-800/40 transition-colors scroll-mt-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-12 gap-16">
             <div className="lg:col-span-7">
               <h2 className="text-4xl font-black text-slate-900 dark:text-white mb-8">{t('find_us')}</h2>
-              <div className="h-[450px] w-full rounded-[3rem] overflow-hidden bg-slate-200 dark:bg-slate-700 shadow-2xl border-8 border-white dark:border-slate-800">
+              <div className="h-[280px] sm:h-[360px] md:h-[420px] lg:h-[450px] w-full rounded-[3rem] overflow-hidden bg-slate-200 dark:bg-slate-700 shadow-2xl border-8 border-white dark:border-slate-800">
                 <iframe 
                   src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3942.2351897648353!2d13.228531314785465!3d-8.82512349366224!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1a51f1585093375b%3A0xc6d7a46e968686e0!2sIMEL%20-%20Instituto%20M%C3%A9dio%20de%20Economia%20de%20Luanda!5e0!3m2!1spt-BR!2sao!4v1690000000000!5m2!1spt-BR!2sao" 
                   width="100%" 
@@ -207,7 +220,7 @@ const LandingPage: React.FC = () => {
             </div>
 
             <div className="lg:col-span-5">
-              <div className="bg-white dark:bg-slate-800 p-10 md:p-14 rounded-[3rem] shadow-2xl border border-slate-100 dark:border-slate-700 sticky top-28">
+              <div className="bg-white dark:bg-slate-800 p-8 sm:p-10 md:p-14 rounded-[3rem] shadow-2xl border border-slate-100 dark:border-slate-700 lg:sticky lg:top-28">
                 <h3 className="text-3xl font-black text-slate-900 dark:text-white mb-3">{t('contact_form_title')}</h3>
                 <p className="text-slate-500 mb-10 text-sm leading-relaxed">{t('contact_form_subtitle')}</p>
 
@@ -218,20 +231,21 @@ const LandingPage: React.FC = () => {
                     </div>
                     <h4 className="text-2xl font-black mb-3 dark:text-white">Mensagem Enviada</h4>
                     <p className="text-slate-500 italic">Obrigado pelo seu contacto. Brevemente entraremos em contacto através do e-mail fornecido.</p>
+                    <button onClick={() => setFormSent(false)} className="mt-6 px-6 py-3 bg-primary text-white rounded-xl font-bold">Enviar Nova Mensagem</button>
                   </div>
                 ) : (
                   <form onSubmit={handleContactSubmit} className="space-y-6">
                     <div>
                       <label className="block text-[10px] font-black text-slate-400 uppercase mb-2 tracking-[0.2em]">{t('name_label')}</label>
-                      <input type="text" required placeholder="Nome Completo" className="w-full px-6 py-4 bg-slate-50 dark:bg-slate-900 border-2 border-slate-100 dark:border-slate-700 rounded-2xl focus:border-primary outline-none transition-all dark:text-white font-medium" />
+                      <input type="text" required value={contactName} onChange={(e) => setContactName(e.target.value)} placeholder="Nome Completo" className="w-full px-6 py-4 bg-slate-50 dark:bg-slate-900 border-2 border-slate-100 dark:border-slate-700 rounded-2xl focus:border-primary outline-none transition-all dark:text-white font-medium" />
                     </div>
                     <div>
                       <label className="block text-[10px] font-black text-slate-400 uppercase mb-2 tracking-[0.2em]">{t('email_label')}</label>
-                      <input type="email" required placeholder="exemplo@imel.edu.ao" className="w-full px-6 py-4 bg-slate-50 dark:bg-slate-900 border-2 border-slate-100 dark:border-slate-700 rounded-2xl focus:border-primary outline-none transition-all dark:text-white font-medium" />
+                      <input type="email" required value={contactEmail} onChange={(e) => setContactEmail(e.target.value)} placeholder="exemplo@imel.edu.ao" className="w-full px-6 py-4 bg-slate-50 dark:bg-slate-900 border-2 border-slate-100 dark:border-slate-700 rounded-2xl focus:border-primary outline-none transition-all dark:text-white font-medium" />
                     </div>
                     <div>
                       <label className="block text-[10px] font-black text-slate-400 uppercase mb-2 tracking-[0.2em]">{t('message_label')}</label>
-                      <textarea required rows={4} placeholder="Como podemos ajudar?" className="w-full px-6 py-4 bg-slate-50 dark:bg-slate-900 border-2 border-slate-100 dark:border-slate-700 rounded-2xl focus:border-primary outline-none transition-all dark:text-white resize-none font-medium"></textarea>
+                      <textarea required rows={4} value={contactMessage} onChange={(e) => setContactMessage(e.target.value)} placeholder="Como podemos ajudar?" className="w-full px-6 py-4 bg-slate-50 dark:bg-slate-900 border-2 border-slate-100 dark:border-slate-700 rounded-2xl focus:border-primary outline-none transition-all dark:text-white resize-none font-medium"></textarea>
                     </div>
                     <button type="submit" className="w-full bg-primary text-white py-5 rounded-2xl font-black text-lg shadow-xl hover:opacity-95 active:scale-95 transition-all flex items-center justify-center gap-4">
                       {t('send_message_btn')} <Send size={22} />
@@ -246,7 +260,7 @@ const LandingPage: React.FC = () => {
 
       {/* Footer */}
       <footer className="py-16 border-t border-slate-100 dark:border-slate-800 text-center bg-white dark:bg-slate-900">
-        <div className="flex flex-col items-center gap-6 max-w-7xl mx-auto px-8">
+        <div className="flex flex-col items-center gap-6 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-3">
             <GraduationCap className="text-primary w-8 h-8" />
             <span className="font-black text-2xl text-slate-900 dark:text-white">{settings.schoolAcronym}</span>
@@ -271,3 +285,4 @@ const LandingPage: React.FC = () => {
 };
 
 export default LandingPage;
+

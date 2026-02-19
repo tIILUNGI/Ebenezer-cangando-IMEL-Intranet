@@ -18,7 +18,7 @@ const GradingPage: React.FC = () => {
       <div className="flex flex-col items-center justify-center h-96 space-y-4">
         <AlertTriangle size={64} className="text-red-500" />
         <h2 className="text-2xl font-black text-slate-800 dark:text-white">Acesso Restrito</h2>
-        <p className="text-slate-500">Apenas professores e administradores podem lanÃ§ar notas.</p>
+        <p className="text-slate-500">Apenas professores e administradores podem lançar notas.</p>
       </div>
     );
   }
@@ -94,10 +94,10 @@ const GradingPage: React.FC = () => {
         <div>
           <h1 className="text-3xl font-black text-slate-900 dark:text-white flex items-center gap-3">
             <ListChecks className="text-primary dark:text-secondary" />
-            LanÃ§amento de Notas
+            Lançamento de Notas
           </h1>
           <p className="text-slate-500 dark:text-slate-400">
-            {user.role === UserRole.PROFESSOR ? `Docente: ${user.name}` : 'VisÃ£o Geral de Pautas'}
+            {user.role === UserRole.PROFESSOR ? `Docente: ${user.name}` : 'Visão Geral de Pautas'}
           </p>
         </div>
 
@@ -123,8 +123,8 @@ const GradingPage: React.FC = () => {
                 <th className="px-6 py-6 text-xs font-black text-slate-400 uppercase tracking-widest text-center">NPP</th>
                 <th className="px-6 py-6 text-xs font-black text-slate-400 uppercase tracking-widest text-center">NPT</th>
                 <th className="px-6 py-6 text-xs font-black text-slate-400 uppercase tracking-widest text-center">Faltas</th>
-                <th className="px-6 py-6 text-xs font-black text-slate-400 uppercase tracking-widest text-center">MÃ©dia</th>
-                <th className="px-8 py-6 text-xs font-black text-slate-400 uppercase tracking-widest text-right">AÃ§Ãµes</th>
+                <th className="px-6 py-6 text-xs font-black text-slate-400 uppercase tracking-widest text-center">Média</th>
+                <th className="px-8 py-6 text-xs font-black text-slate-400 uppercase tracking-widest text-right">Ações</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50 dark:divide-slate-700">
@@ -179,7 +179,7 @@ const GradingPage: React.FC = () => {
                           <button onClick={cancelEditing} className="p-2.5 bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-xl"><X size={20} /></button>
                         </div>
                       ) : (
-                        <button onClick={() => startEditing(g)} className="px-5 py-2.5 bg-primary dark:bg-slate-700 text-white dark:text-secondary rounded-xl font-bold hover:opacity-90 active:scale-95 transition-all shadow-md">LanÃ§ar</button>
+                        <button onClick={() => startEditing(g)} className="px-5 py-2.5 bg-primary dark:bg-slate-700 text-white dark:text-secondary rounded-xl font-bold hover:opacity-90 active:scale-95 transition-all shadow-md">Lançar</button>
                       )}
                     </td>
                   </tr>
@@ -199,3 +199,4 @@ const GradingPage: React.FC = () => {
 };
 
 export default GradingPage;
+

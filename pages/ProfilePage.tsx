@@ -21,15 +21,15 @@ const ProfilePage: React.FC = () => {
     if (!user) return;
 
     if (user.password !== passData.current) {
-      setError('A senha atual estÃ¡ incorreta.');
+      setError('A senha atual está incorreta.');
       return;
     }
     if (passData.new !== passData.confirm) {
-      setError('As senhas nÃ£o coincidem.');
+      setError('As senhas não coincidem.');
       return;
     }
     if (passData.new.length < 6) {
-      setError('A nova senha deve ter no mÃ­nimo 6 caracteres.');
+      setError('A nova senha deve ter no mínimo 6 caracteres.');
       return;
     }
 
@@ -49,7 +49,7 @@ const ProfilePage: React.FC = () => {
           <UserIcon className="text-primary" />
           Meu Perfil de Acesso
         </h1>
-        <p className="text-slate-500 dark:text-slate-400">Gerencie as suas informaÃ§Ãµes pessoais e seguranÃ§a da conta.</p>
+        <p className="text-slate-500 dark:text-slate-400">Gerencie as suas informações pessoais e segurança da conta.</p>
       </div>
 
       <div className="grid md:grid-cols-2 gap-8">
@@ -65,7 +65,7 @@ const ProfilePage: React.FC = () => {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="p-4 bg-slate-50 dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-700">
-                <p className="text-[10px] font-black text-slate-400 uppercase mb-1">NÂº Processo</p>
+                <p className="text-[10px] font-black text-slate-400 uppercase mb-1">Nº Processo</p>
                 <p className="font-bold text-slate-800 dark:text-white">{user.processNumber}</p>
               </div>
               <div className="p-4 bg-slate-50 dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-700">
@@ -84,7 +84,7 @@ const ProfilePage: React.FC = () => {
 
         <div className="bg-white dark:bg-slate-800 rounded-[2.5rem] p-8 border border-slate-100 dark:border-slate-700 shadow-sm space-y-6">
           <h3 className="text-xl font-bold text-slate-800 dark:text-white flex items-center gap-2">
-            <Key size={20} className="text-primary" /> SeguranÃ§a
+            <Key size={20} className="text-primary" /> Segurança
           </h3>
 
           <form onSubmit={handlePasswordChange} className="space-y-4">
@@ -95,7 +95,7 @@ const ProfilePage: React.FC = () => {
                 required
                 value={passData.current}
                 onChange={(e) => setPassData({...passData, current: e.target.value})}
-                placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
+                placeholder="••••••••"
                 className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:border-primary dark:text-white"
               />
             </div>
@@ -106,7 +106,7 @@ const ProfilePage: React.FC = () => {
                 required
                 value={passData.new}
                 onChange={(e) => setPassData({...passData, new: e.target.value})}
-                placeholder="MÃ­nimo 6 caracteres"
+                placeholder="Mínimo 6 caracteres"
                 className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:border-primary dark:text-white"
               />
             </div>
@@ -117,7 +117,7 @@ const ProfilePage: React.FC = () => {
                 required
                 value={passData.confirm}
                 onChange={(e) => setPassData({...passData, confirm: e.target.value})}
-                placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
+                placeholder="••••••••"
                 className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:border-primary dark:text-white"
               />
             </div>
@@ -140,8 +140,8 @@ const ProfilePage: React.FC = () => {
       <div className="bg-emerald-50 dark:bg-emerald-900/10 p-6 rounded-3xl border border-emerald-100 dark:border-emerald-800 flex items-start gap-4">
         <Shield className="text-emerald-500 shrink-0" size={24} />
         <div>
-          <p className="font-bold text-emerald-700 dark:text-emerald-400">ProteÃ§Ã£o de Identidade</p>
-          <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">As suas credenciais sÃ£o registradas localmente e qualquer alteraÃ§Ã£o Ã© registrada nos logs de auditoria do sistema.</p>
+          <p className="font-bold text-emerald-700 dark:text-emerald-400">Proteção de Identidade</p>
+          <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">As suas credenciais são registradas localmente e qualquer alteração é registrada nos logs de auditoria do sistema.</p>
         </div>
       </div>
     </div>
@@ -149,3 +149,4 @@ const ProfilePage: React.FC = () => {
 };
 
 export default ProfilePage;
+

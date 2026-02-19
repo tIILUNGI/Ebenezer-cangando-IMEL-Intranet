@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+﻿import React, { useMemo, useState, useEffect } from 'react';
 import { useDatabase, useAuth } from '../App';
 import { Send, MessageCircle } from 'lucide-react';
 
@@ -12,8 +12,7 @@ const MessagesPage: React.FC = () => {
     if (!user) return [];
     return users.filter(u => {
       if (u.id === user.id) return false;
-      if (user.turma) return u.turma === user.turma;
-      return true;
+      return Boolean(user.turma && u.turma && u.turma === user.turma);
     });
   }, [users, user]);
 
@@ -27,6 +26,17 @@ const MessagesPage: React.FC = () => {
     return relatedMessages.filter(m => m.toId === user.id);
   }, [relatedMessages, user]);
 
+  useEffect(() => {
+    const hash = window.location.hash;
+    const query = hash.includes('?') ? hash.split('?')[1] : '';
+    const params = new URLSearchParams(query || '');
+    const to = params.get('to');
+    if (to) {
+      const target = availableTargets.find(u => u.id === to);
+      if (target) setTargetId(target.id);
+    }
+  }, [availableTargets]);
+
   const handleSend = (e: React.FormEvent) => {
     e.preventDefault();
     if (!targetId || !content.trim()) return;
@@ -35,7 +45,7 @@ const MessagesPage: React.FC = () => {
   };
 
   return (
-    <div className="grid lg:grid-cols-3 gap-8 animate-fade h-[calc(100vh-160px)]">
+    <div className="grid lg:grid-cols-3 gap-6 sm:gap-8 animate-fade min-h-[calc(100vh-160px)] lg:h-[calc(100vh-160px)]">
       <div className="bg-white dark:bg-slate-800 rounded-[2.5rem] shadow-sm border border-slate-100 dark:border-slate-700 p-8 flex flex-col">
         <h3 className="text-xl font-black text-slate-900 dark:text-white mb-8">Nova Mensagem</h3>
         <form onSubmit={handleSend} className="space-y-6 flex-1">
@@ -97,3 +107,5 @@ const MessagesPage: React.FC = () => {
 };
 
 export default MessagesPage;
+
+

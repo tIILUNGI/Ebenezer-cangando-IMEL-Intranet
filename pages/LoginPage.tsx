@@ -25,7 +25,7 @@ const LoginPage: React.FC = () => {
     if (success) {
       navigate('/dashboard');
     } else {
-      setError('Credenciais invÃ¡lidas. Por favor, verifique o seu nÃºmero de processo e tente novamente.');
+      setError('Credenciais inválidas. Por favor, verifique o seu número de processo e tente novamente.');
       setIsLoading(false);
     }
   };
@@ -65,7 +65,7 @@ const LoginPage: React.FC = () => {
                   type="text" 
                   value={processNumber}
                   onChange={(e) => setProcessNumber(e.target.value)}
-                  placeholder="Introduza o nÂº de processo"
+                  placeholder="Introduza o nº de processo"
                   className="w-full pl-12 pr-4 py-4 bg-slate-50 dark:bg-slate-800 border-2 border-slate-100 dark:border-slate-700 rounded-2xl focus:border-primary focus:bg-white transition-all outline-none font-bold text-slate-800 dark:text-white"
                   required
                 />
@@ -116,7 +116,7 @@ const LoginPage: React.FC = () => {
 
             <div className="text-center pt-4">
               <p className="text-sm font-bold text-slate-500">
-                NÃ£o tem conta?{' '}
+                Não tem conta?{' '}
                 <Link to="/registrar" className="text-primary dark:text-secondary hover:underline font-black">
                   Criar conta agora
                 </Link>
@@ -138,7 +138,7 @@ const LoginPage: React.FC = () => {
              <div className="mb-6 bg-white p-4 inline-block rounded-2xl shadow-xl">
                 <GraduationCap className="text-primary w-12 h-12" />
              </div>
-            <h2 className="text-4xl font-black text-white leading-tight">Gira a sua <br/><span className="text-secondary underline text-5xl">vida acadÃ©mica</span> com eficiÃªncia.</h2>
+            <h2 className="text-4xl font-black text-white leading-tight">Gira a sua <br/><span className="text-secondary underline text-5xl">vida académica</span> com eficiência.</h2>
           </div>
         </div>
       </div>
@@ -147,3 +147,4 @@ const LoginPage: React.FC = () => {
 };
 
 export default LoginPage;
+

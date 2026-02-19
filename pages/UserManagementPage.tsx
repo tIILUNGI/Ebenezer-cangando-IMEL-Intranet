@@ -1,7 +1,6 @@
-
 import React, { useState } from 'react';
-import { Plus, Search, Edit2, Trash2, Filter, Download, X, Save, AlertTriangle, ShieldCheck } from 'lucide-react';
-import { useDatabase, useSettings, useAuth } from '../App';
+import { Plus, Search, Edit2, Trash2, Filter, Download, X, ShieldCheck } from 'lucide-react';
+import { useDatabase, useAuth } from '../App';
 import { UserRole, User } from '../types';
 
 interface Props {
@@ -10,7 +9,6 @@ interface Props {
 
 const UserManagementPage: React.FC<Props> = ({ mode = 'full' }) => {
   const { users, addUser, updateUser, deleteUser } = useDatabase();
-  const { t } = useSettings();
   const { user: currentUser } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -24,7 +22,6 @@ const UserManagementPage: React.FC<Props> = ({ mode = 'full' }) => {
     isActive: true
   });
 
-  // Somente ADMIN pode editar. DIRETOR apenas visualiza para auditoria.
   const canEdit = currentUser?.role === UserRole.ADMIN;
   const isDiretor = currentUser?.role === UserRole.DIRETOR;
 
@@ -57,9 +54,32 @@ const UserManagementPage: React.FC<Props> = ({ mode = 'full' }) => {
   };
 
   const handleDelete = (id: string) => {
-    if (confirm('Tem certeza que deseja remover este usuÃ¡rio permanentemente?')) {
+    if (confirm('Tem certeza que deseja remover este usuário permanentemente?')) {
       deleteUser(id, currentUser?.name || 'Sistema');
     }
+  };
+
+  const handleExportUsers = () => {
+    const header = ['id', 'nome', 'processo', 'perfil', 'turma', 'email', 'ativo'];
+    const rows = filteredUsers.map(u => [
+      u.id,
+      `"${u.name.replace(/"/g, '""')}"`,
+      u.processNumber,
+      u.role,
+      u.turma || '',
+      u.email || '',
+      u.isActive === false ? 'nao' : 'sim'
+    ]);
+    const csv = [header.join(';'), ...rows.map(r => r.join(';'))].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'usuarios_imel.csv';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
   };
 
   return (
@@ -67,16 +87,16 @@ const UserManagementPage: React.FC<Props> = ({ mode = 'full' }) => {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-black text-slate-900 dark:text-white">
-            {mode === 'alunos' ? 'DiretÃ³rio de Estudantes' : 'GestÃ£o Central de UsuÃ¡rios'}
+            {mode === 'alunos' ? 'Diretório de Estudantes' : 'Gestão Central de Usuários'}
           </h1>
           <p className="text-slate-500 dark:text-slate-400">
-            {isDiretor ? 'VisualizaÃ§Ã£o estratÃ©gica de acessos e perfis.' : 'Administre as credenciais e acessos da instituiÃ§Ã£o.'}
+            {isDiretor ? 'Visualização estratégica de acessos e perfis.' : 'Administre as credenciais e acessos da instituição.'}
           </p>
         </div>
         
         {canEdit && (
           <button className="flex items-center gap-2 px-6 py-2.5 bg-primary text-white rounded-xl text-sm font-bold shadow-lg shadow-blue-900/20 hover:scale-105 transition-all" onClick={handleOpenAdd}>
-            <Plus size={18} /> Novo UsuÃ¡rio
+            <Plus size={18} /> Novo Usuário
           </button>
         )}
       </div>
@@ -84,7 +104,7 @@ const UserManagementPage: React.FC<Props> = ({ mode = 'full' }) => {
       {isDiretor && (
         <div className="p-4 bg-emerald-50 dark:bg-emerald-900/10 border border-emerald-200 dark:border-emerald-800 rounded-2xl flex items-center gap-3 text-emerald-700 dark:text-emerald-400">
           <ShieldCheck size={20}/>
-          <span className="text-sm font-bold">Modo Auditoria: VisualizaÃ§Ã£o completa habilitada para DireÃ§Ã£o.</span>
+          <span className="text-sm font-bold">Modo Auditoria: Visualização completa habilitada para Direção.</span>
         </div>
       )}
 
@@ -93,7 +113,7 @@ const UserManagementPage: React.FC<Props> = ({ mode = 'full' }) => {
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
           <input 
             type="text" 
-            placeholder="Buscar nome ou nÂº de processo..."
+            placeholder="Buscar nome ou nº de processo..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full pl-12 pr-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:border-primary text-sm dark:text-white"
@@ -101,7 +121,7 @@ const UserManagementPage: React.FC<Props> = ({ mode = 'full' }) => {
         </div>
         <div className="flex gap-2">
            <button className="flex items-center gap-2 px-4 py-2 text-slate-500 font-bold text-sm"><Filter size={18}/> Filtros</button>
-           <button className="flex items-center gap-2 px-4 py-2 bg-slate-50 dark:bg-slate-900 text-slate-600 dark:text-slate-300 rounded-xl font-bold text-sm border border-slate-100 dark:border-slate-700"><Download size={18}/> Exportar</button>
+           <button onClick={handleExportUsers} className="flex items-center gap-2 px-4 py-2 bg-slate-50 dark:bg-slate-900 text-slate-600 dark:text-slate-300 rounded-xl font-bold text-sm border border-slate-100 dark:border-slate-700"><Download size={18}/> Exportar</button>
         </div>
       </div>
 
@@ -111,10 +131,10 @@ const UserManagementPage: React.FC<Props> = ({ mode = 'full' }) => {
             <thead>
               <tr className="bg-slate-50 dark:bg-slate-900/50 border-b border-slate-100 dark:border-slate-700">
                 <th className="px-8 py-5 text-xs font-black text-slate-400 uppercase tracking-widest">Identidade</th>
-                <th className="px-8 py-5 text-xs font-black text-slate-400 uppercase tracking-widest text-center">NÂº Processo</th>
+                <th className="px-8 py-5 text-xs font-black text-slate-400 uppercase tracking-widest text-center">Nº Processo</th>
                 <th className="px-8 py-5 text-xs font-black text-slate-400 uppercase tracking-widest text-center">Perfil</th>
                 <th className="px-8 py-5 text-xs font-black text-slate-400 uppercase tracking-widest text-center">Turma</th>
-                {canEdit && <th className="px-8 py-5 text-xs font-black text-slate-400 uppercase tracking-widest text-right">AÃ§Ãµes</th>}
+                {canEdit && <th className="px-8 py-5 text-xs font-black text-slate-400 uppercase tracking-widest text-right">Ações</th>}
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50 dark:divide-slate-700">
@@ -165,7 +185,7 @@ const UserManagementPage: React.FC<Props> = ({ mode = 'full' }) => {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4">
           <div className="bg-white dark:bg-slate-800 w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden animate-fade">
             <div className="px-8 py-6 bg-primary text-white flex items-center justify-between">
-              <h3 className="text-xl font-bold">{editingUser ? 'Atualizar Perfil' : 'Cadastrar UsuÃ¡rio'}</h3>
+              <h3 className="text-xl font-bold">{editingUser ? 'Atualizar Perfil' : 'Cadastrar Usuário'}</h3>
               <button onClick={() => setIsModalOpen(false)}><X /></button>
             </div>
             <form onSubmit={handleSave} className="p-8 space-y-4">
@@ -175,7 +195,7 @@ const UserManagementPage: React.FC<Props> = ({ mode = 'full' }) => {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-black text-slate-400 uppercase mb-2">NÂº Processo</label>
+                  <label className="block text-xs font-black text-slate-400 uppercase mb-2">Nº Processo</label>
                   <input type="text" required value={formData.processNumber} onChange={(e) => setFormData({...formData, processNumber: e.target.value})} className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:border-primary dark:text-white" />
                 </div>
                 <div>
@@ -208,3 +228,4 @@ const UserManagementPage: React.FC<Props> = ({ mode = 'full' }) => {
 };
 
 export default UserManagementPage;
+

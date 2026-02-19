@@ -1,5 +1,4 @@
-
-import React, { useState, useEffect, createContext, useContext, useMemo } from 'react';
+﻿import React, { useState, useEffect, createContext, useContext, useMemo } from 'react';
 import { 
   HashRouter as Router, 
   Routes, 
@@ -24,6 +23,7 @@ import BrandingPage from './pages/BrandingPage';
 import ProfilePage from './pages/ProfilePage';
 import Sidebar from './components/Sidebar';
 import Topbar from './components/Topbar';
+import AIChatWidget from './components/AIChatWidget';
 
 import AcademicStatsPage from './pages/AcademicStatsPage';
 import TeacherMonitoringPage from './pages/TeacherMonitoringPage';
@@ -349,6 +349,7 @@ const AppShell: React.FC = () => {
             <Route path="*" element={<Navigate to="/dashboard" />} />
           </Routes>
         </main>
+        <AIChatWidget />
       </div>
     </div>
   );
@@ -384,3 +385,4 @@ export const translations = {
     dashboard_student: "Painel do Aluno", dashboard_teacher: "Painel Docente", dashboard_guardian: "Portal do Encarregado", dashboard_director: "Direcção Geral", dashboard_admin: "Administração", my_grades: "Minhas Notas", guardian_grades: "Notas do Educando", my_attendance: "Minha Assiduidade", guardian_attendance: "Faltas do Educando", my_schedule: "Horário de Aulas", guardian_schedule: "Horário Escolar", my_resources: "Recursos Didácticos", guardian_resources: "Materiais de Apoio", my_history: "Histórico Escolar", guardian_history: "Percurso Académico", grading_sheet: "Pauta de Avaliação", teacher_schedule: "Horário Docente", content_mgmt: "Gestão de Conteúdos", academic_analysis: "Análise Estatística", pedagogic_control: "Controlo Pedagógico", enrollment_mgmt: "Gestão de Alunos", inst_structure: "Estrutura Escolar", mgmt_maps: "Mapas de Gestão", security_logs: "Registos de Auditoria", access_accounts: "Contas de Acesso", visual_id: "Identidade Visual", sys_audit: "Auditoria do Sistema", communication: "Comunicação", config: "Configurações", logout: "Sair do Sistema", welcome: "Bem-vindo", search: "Pesquisar...", login_btn: "LOGIN", login_title: "Acesso ao Sistema", login_subtitle: "Insira as suas credenciais para aceder ao Intra IMEL.", process_number: "Número de Processo", password: "Palavra-passe", forgot_password: "Esqueci a minha senha", create_account: "Não tem conta? Criar conta", start_now: "Aceder à Plataforma", features: "Funcionalidades", location: "Localização", find_us: "Onde Estamos", demo: "Visão Geral", contact_form_title: "Contacte-nos", contact_form_subtitle: "Para questões técnicas ou administrativas, envie-nos uma mensagem.", name_label: "Nome Completo", email_label: "Endereço de E-mail", message_label: "Assunto / Mensagem", send_message_btn: "ENVIAR MENSAGEM", advantages_title: "Vantagens do Intra IMEL", why_use_title: "Porquê utilizar o sistema?", advantage_1: "Centralização de Dados", advantage_2: "Comunicação Directa", advantage_3: "Monitoramento em Tempo Real", why_text: "O Intra IMEL foi desenvolvido para modernizar a gestão escolar do IMEL, promovendo a transparência e eficiência entre alunos, encarregados, professores e direcção."
   }
 };
+
