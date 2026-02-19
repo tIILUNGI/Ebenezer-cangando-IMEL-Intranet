@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
 import { 
   Users, GraduationCap, TrendingUp, AlertCircle, CheckCircle2, 
-  Activity, Globe, Calendar, BrainCircuit, MessageSquare, Send, ShieldCheck, Server, Key, Database, FileText, Zap
+  Activity, Globe, Calendar as CalendarIcon, BrainCircuit, MessageSquare, Send, ShieldCheck, Server, Key, Database, FileText, Zap, Briefcase, Layers, ChevronLeft, ChevronRight
 } from 'lucide-react';
 import { useAuth, useSettings, useSystemAdmin, useDatabase } from '../App';
 import { UserRole, AIInsight } from '../types';
@@ -26,6 +26,58 @@ const StatCard: React.FC<{ icon: any, label: string, value: string, trend?: stri
     <h3 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white truncate">{value}</h3>
   </div>
 );
+
+const CalendarWidget: React.FC = () => {
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const daysInMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
+  const firstDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).getDay();
+  
+  const events = [
+    { date: 5, title: 'Início das Provas', type: 'exam' },
+    { date: 12, title: 'Feriado Nacional', type: 'holiday' },
+    { date: 25, title: 'Conselho de Notas', type: 'meeting' },
+  ];
+
+  const prevMonth = () => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1));
+  const nextMonth = () => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1));
+
+  return (
+    <div className="bg-white dark:bg-slate-800 p-6 rounded-[2rem] shadow-sm border border-slate-100 dark:border-slate-700 h-full">
+      <div className="flex items-center justify-between mb-6">
+        <h3 className="font-bold text-slate-800 dark:text-white flex items-center gap-2">
+          <CalendarIcon size={18} className="text-primary" /> Calendário
+        </h3>
+        <div className="flex gap-2">
+          <button onClick={prevMonth} className="p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg"><ChevronLeft size={16}/></button>
+          <span className="text-xs font-black uppercase tracking-widest">{currentDate.toLocaleString('pt-BR', { month: 'long', year: 'numeric' })}</span>
+          <button onClick={nextMonth} className="p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg"><ChevronRight size={16}/></button>
+        </div>
+      </div>
+      <div className="grid grid-cols-7 gap-1 text-center mb-2">
+        {['D', 'S', 'T', 'Q', 'Q', 'S', 'S'].map(d => (
+          <div key={d} className="text-[10px] font-black text-slate-400">{d}</div>
+        ))}
+      </div>
+      <div className="grid grid-cols-7 gap-1">
+        {Array.from({ length: firstDay }).map((_, i) => <div key={`empty-${i}`} />)}
+        {Array.from({ length: daysInMonth }).map((_, i) => {
+          const day = i + 1;
+          const event = events.find(e => e.date === day);
+          const isToday = day === new Date().getDate() && currentDate.getMonth() === new Date().getMonth();
+          
+          return (
+            <div key={day} className={`aspect-square flex items-center justify-center rounded-xl text-xs font-bold relative group cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors ${isToday ? 'bg-primary text-white hover:bg-primary' : 'text-slate-600 dark:text-slate-300'}`}>
+              {day}
+              {event && (
+                <div className={`absolute bottom-1 w-1 h-1 rounded-full ${event.type === 'exam' ? 'bg-red-500' : event.type === 'holiday' ? 'bg-emerald-500' : 'bg-blue-500'}`}></div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
 
 const DashboardPage: React.FC = () => {
   const { user, activeStudent } = useAuth();
@@ -146,6 +198,28 @@ const DashboardPage: React.FC = () => {
         )}
       </div>
 
+      {/* Seção de Coordenação */}
+      {user?.coordinatorType && (
+        <div className="bg-gradient-to-r from-blue-900 to-primary p-8 rounded-[2.5rem] text-white shadow-xl animate-fade relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -mr-16 -mt-16"></div>
+          <div className="relative z-10">
+            <h2 className="text-2xl font-black mb-2 flex items-center gap-3">
+              {user.coordinatorType === 'curso' ? <Briefcase /> : <Layers />}
+              {user.coordinatorType === 'curso' ? 'Coordenação de Curso' : 'Coordenação de Turma'}
+            </h2>
+            <p className="text-blue-100 mb-6">
+              Você está designado como coordenador {user.coordinatorType === 'curso' ? 'do curso' : 'da turma'} <strong className="text-white underline">{user.coordinatedEntity}</strong>.
+            </p>
+            <button 
+              onClick={() => navigate(user.coordinatorType === 'curso' ? '/coordenacao/curso' : '/coordenacao/turma')}
+              className="px-8 py-3 bg-white text-primary rounded-xl font-bold hover:scale-105 transition-all shadow-lg"
+            >
+              Acessar Painel de Gestão
+            </button>
+          </div>
+        </div>
+      )}
+
       {isDiretor && renderDirectorKPIs()}
       {isAdmin && (
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 animate-fade">
@@ -159,7 +233,7 @@ const DashboardPage: React.FC = () => {
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 animate-fade">
           <StatCard icon={TrendingUp} label="Média" value={avgGrade} color={settings.primaryColor} />
           <StatCard icon={CheckCircle2} label="Presença" value="98%" color="#10b981" />
-          <StatCard icon={Calendar} label="Provas" value="3" color="#6366f1" />
+          <StatCard icon={CalendarIcon} label="Provas" value="3" color="#6366f1" />
           <StatCard icon={AlertCircle} label="Faltas" value={totalFaltas.toString()} color="#ef4444" />
         </div>
       )}
@@ -254,6 +328,7 @@ const DashboardPage: React.FC = () => {
              <p className="text-[9px] sm:text-[10px] text-slate-500 mb-6 uppercase tracking-widest font-black">Emissão de listagens oficiais</p>
              <button className="w-full py-4 bg-slate-50 dark:bg-slate-700 rounded-2xl font-black text-[10px] sm:text-[11px] uppercase tracking-widest text-primary dark:text-secondary hover:bg-primary hover:text-white transition-all shadow-sm">Relatórios</button>
           </div>
+          <CalendarWidget />
         </div>
       </div>
 

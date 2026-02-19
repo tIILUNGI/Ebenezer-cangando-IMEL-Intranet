@@ -15,7 +15,6 @@ export interface User {
   password?: string;
   email?: string;
   phone?: string;
-  password?: string;
   avatar?: string;
   turma?: string;
   isActive?: boolean;
@@ -25,6 +24,8 @@ export interface User {
     browser: boolean;
     grades: boolean;
   };
+  coordinatorType?: 'curso' | 'turma' | null;
+  coordinatedEntity?: string;
 }
 
 export interface QuarterGrades {
@@ -55,6 +56,8 @@ export interface Notification {
   type: 'message' | 'announcement' | 'grade' | 'system';
   read: boolean;
   timestamp: string;
+  targetAudience?: UserRole.ALUNO | UserRole.PROFESSOR | 'Todos';
+  authorName?: string;
 }
 
 export interface LibraryResource {

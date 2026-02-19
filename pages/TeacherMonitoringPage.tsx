@@ -10,8 +10,8 @@ const TeacherMonitoringPage: React.FC = () => {
   return (
     <div className="space-y-8 animate-fade">
       <div>
-        <h1 className="text-3xl font-black text-slate-900 dark:text-white">Monitoramento Docente</h1>
-        <p className="text-slate-500 dark:text-slate-400">Acompanhamento do cumprimento do plano letivo e lan�amentos.</p>
+        <h1 className="text-3xl font-black text-slate-900 dark:text-white">Monitorização Docente</h1>
+        <p className="text-slate-500 dark:text-slate-400">Acompanhamento do cumprimento do plano letivo e lançamentos.</p>
       </div>
 
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -29,7 +29,7 @@ const TeacherMonitoringPage: React.FC = () => {
 
             <div className="space-y-4 mb-8">
               <div className="flex items-center justify-between text-sm">
-                <span className="text-slate-500 flex items-center gap-2"><Clipboard size={16}/> Lan�amento de Notas</span>
+                <span className="text-slate-500 flex items-center gap-2"><Clipboard size={16}/> Lançamento de Notas</span>
                 <span className="font-bold text-emerald-500 flex items-center gap-1">100% <CheckCircle size={14}/></span>
               </div>
               <div className="flex items-center justify-between text-sm">
@@ -57,4 +57,3 @@ const TeacherMonitoringPage: React.FC = () => {
 };
 
 export default TeacherMonitoringPage;
-

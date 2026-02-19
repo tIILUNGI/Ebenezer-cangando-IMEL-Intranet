@@ -11,7 +11,7 @@ const AttendancePage: React.FC = () => {
   const studentGrades = grades.filter(g => g.studentId === activeStudent?.id);
   const totalFaltas = studentGrades.reduce((acc, g) => acc + g.faltas, 0);
   
-  // Média de presença baseada em 30 aulas teóricas/práticas por trimestre
+  // MÃ©dia de presenÃ§a baseada em 30 aulas teÃ³ricas/prÃ¡ticas por trimestre
   const aulasTotais = studentGrades.length * 30;
   const percPresenca = aulasTotais > 0 ? Math.round(((aulasTotais - totalFaltas) / aulasTotais) * 100) : 100;
 
@@ -31,7 +31,7 @@ const AttendancePage: React.FC = () => {
     <div className="space-y-8 animate-fade">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-black text-slate-900 dark:text-white">Relatório de Assiduidade</h1>
+          <h1 className="text-3xl font-black text-slate-900 dark:text-white">RelatÃ³rio de Assiduidade</h1>
           <p className="text-slate-500 dark:text-slate-400">Monitoramento de faltas para {activeStudent?.name}.</p>
         </div>
         <button 
@@ -47,7 +47,7 @@ const AttendancePage: React.FC = () => {
           <div className="w-12 h-12 bg-emerald-50 text-emerald-500 rounded-2xl flex items-center justify-center mb-4">
             <UserCheck size={24} />
           </div>
-          <p className="text-slate-400 text-[10px] font-black uppercase mb-1">Taxa de Presença</p>
+          <p className="text-slate-400 text-[10px] font-black uppercase mb-1">Taxa de PresenÃ§a</p>
           <h3 className="text-3xl font-black text-slate-900 dark:text-white">{percPresenca}%</h3>
         </div>
         <div className="bg-white dark:bg-slate-800 p-8 rounded-[2.5rem] shadow-sm border border-slate-100 dark:border-slate-700">
@@ -77,7 +77,7 @@ const AttendancePage: React.FC = () => {
               <tr className="bg-slate-50 dark:bg-slate-900/50 border-b border-slate-100 dark:border-slate-700">
                 <th className="px-8 py-5 text-xs font-black text-slate-400 uppercase tracking-widest">Disciplina</th>
                 <th className="px-8 py-5 text-xs font-black text-slate-400 uppercase tracking-widest text-center">Tempos Letivos</th>
-                <th className="px-8 py-5 text-xs font-black text-slate-400 uppercase tracking-widest text-center">Presenças</th>
+                <th className="px-8 py-5 text-xs font-black text-slate-400 uppercase tracking-widest text-center">PresenÃ§as</th>
                 <th className="px-8 py-5 text-xs font-black text-slate-400 uppercase tracking-widest text-center">Faltas</th>
                 <th className="px-8 py-5 text-xs font-black text-slate-400 uppercase tracking-widest text-right">Aproveitamento</th>
               </tr>
@@ -113,4 +113,3 @@ const AttendancePage: React.FC = () => {
 };
 
 export default AttendancePage;
-

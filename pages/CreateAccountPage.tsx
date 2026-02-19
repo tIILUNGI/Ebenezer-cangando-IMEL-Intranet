@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { ArrowRight, ArrowLeft, CheckCircle2, User, Mail, Lock } from 'lucide-react';
+import { ArrowRight, ArrowLeft, CheckCircle2, User, Mail, Lock, Fingerprint } from 'lucide-react';
 import { useDatabase } from '../App';
 
 const CreateAccountPage: React.FC = () => {
   const [step, setStep] = useState(1);
   const [processNumber, setProcessNumber] = useState('');
   const [foundUser, setFoundUser] = useState<any>(null);
+  const [bi, setBi] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [email, setEmail] = useState('');
@@ -21,6 +22,10 @@ const CreateAccountPage: React.FC = () => {
     const user = users.find(u => u.processNumber === processNumber);
     if (!user) {
       setError('Número de processo não encontrado na base de dados do IMEL.');
+      return;
+    }
+    if (user.isActive) {
+      setError('Esta conta já foi ativada. Se esqueceu a senha, por favor, use a opção "Recuperar Senha" na página de login.');
       return;
     }
     setFoundUser(user);
@@ -42,6 +47,10 @@ const CreateAccountPage: React.FC = () => {
 
   const handleFinish = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (foundUser.bi !== bi) {
+      setError('O número do BI não corresponde ao registado no sistema. Contacte a secretaria.');
+      return;
+    }
     if (password.length < 6) {
       setError('A palavra-passe deve ter no mínimo 6 caracteres.');
       return;
@@ -128,6 +137,20 @@ const CreateAccountPage: React.FC = () => {
 
             <form onSubmit={handleFinish} className="space-y-6">
               <div className="grid md:grid-cols-2 gap-4">
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-bold text-slate-700 mb-2">Número de BI</label>
+                  <div className="relative">
+                    <Fingerprint className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                    <input
+                      type="text"
+                      value={bi}
+                      onChange={(e) => setBi(e.target.value)}
+                      placeholder="Seu número do Bilhete de Identidade"
+                      className="w-full pl-12 pr-4 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:border-[#003366] focus:bg-white transition-all outline-none"
+                      required
+                    />
+                  </div>
+                </div>
                 <div className="md:col-span-2">
                   <label className="block text-sm font-bold text-slate-700 mb-2">Seu E-mail</label>
                   <div className="relative">
@@ -221,4 +244,3 @@ const CreateAccountPage: React.FC = () => {
 };
 
 export default CreateAccountPage;
-

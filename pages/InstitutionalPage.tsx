@@ -16,7 +16,7 @@ const InstitutionalPage: React.FC = () => {
     <div className="space-y-8 animate-fade">
       <div>
         <h1 className="text-3xl font-black text-slate-900 dark:text-white">Estrutura Institucional</h1>
-        <p className="text-slate-500 dark:text-slate-400">Configurações e visão geral do {settings.schoolName}.</p>
+        <p className="text-slate-500 dark:text-slate-400">ConfiguraÃ§Ãµes e visÃ£o geral do {settings.schoolName}.</p>
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
@@ -38,15 +38,15 @@ const InstitutionalPage: React.FC = () => {
           <h3 className="text-xl font-bold mb-8 flex items-center gap-2"><Home className="text-primary"/> Organograma & Departamentos</h3>
           <div className="space-y-4">
             {[
-              { dep: 'Direção Geral', chief: 'Dr. Augusto Feliciano' },
-              { dep: 'Secretaria Académica', chief: 'Dra. Maria Luz' },
-              { dep: 'Coordenação de Cursos', chief: 'Msc. Carlos Mendes' },
-              { dep: 'Departamento Financeiro', chief: 'Dr. Pedro João' },
+              { dep: 'DireÃ§Ã£o Geral', chief: 'Dr. Augusto Feliciano' },
+              { dep: 'Secretaria AcadÃ©mica', chief: 'Dra. Maria Luz' },
+              { dep: 'CoordenaÃ§Ã£o de Cursos', chief: 'Msc. Carlos Mendes' },
+              { dep: 'Departamento Financeiro', chief: 'Dr. Pedro JoÃ£o' },
             ].map(d => (
               <div key={d.dep} className="p-6 bg-slate-50 dark:bg-slate-900 rounded-3xl flex items-center justify-between border border-transparent hover:border-primary transition-all">
                 <div>
                   <h4 className="font-bold dark:text-white">{d.dep}</h4>
-                  <p className="text-sm text-slate-500">Responsável: {d.chief}</p>
+                  <p className="text-sm text-slate-500">ResponsÃ¡vel: {d.chief}</p>
                 </div>
                 <button className="text-primary font-bold text-sm">Ver Equipe</button>
               </div>
@@ -55,7 +55,7 @@ const InstitutionalPage: React.FC = () => {
         </div>
 
         <div className="bg-white dark:bg-slate-800 p-8 rounded-[2.5rem] shadow-sm border border-slate-100 dark:border-slate-700">
-          <h3 className="text-xl font-bold mb-8 flex items-center gap-2"><Calendar className="text-orange-500"/> Ciclo Académico</h3>
+          <h3 className="text-xl font-bold mb-8 flex items-center gap-2"><Calendar className="text-orange-500"/> Ciclo AcadÃ©mico</h3>
           <div className="space-y-6">
             <div className="p-6 bg-orange-50 dark:bg-orange-900/10 rounded-3xl border border-orange-100 dark:border-orange-800">
               <p className="text-xs font-black text-orange-600 uppercase mb-2">Ano Lectivo Corrente</p>
@@ -63,9 +63,9 @@ const InstitutionalPage: React.FC = () => {
             </div>
             <div className="p-6 bg-blue-50 dark:bg-blue-900/10 rounded-3xl border border-blue-100 dark:border-blue-800">
               <p className="text-xs font-black text-blue-600 uppercase mb-2">Trimestre Atual</p>
-              <p className="text-3xl font-black text-blue-700 dark:text-blue-300">2º Trimestre</p>
+              <p className="text-3xl font-black text-blue-700 dark:text-blue-300">2Âº Trimestre</p>
             </div>
-            <button className="w-full py-4 bg-primary text-white rounded-2xl font-bold shadow-lg hover:scale-105 transition-all">Alterar Calendário</button>
+            <button className="w-full py-4 bg-primary text-white rounded-2xl font-bold shadow-lg hover:scale-105 transition-all">Alterar CalendÃ¡rio</button>
           </div>
         </div>
       </div>
@@ -74,4 +74,3 @@ const InstitutionalPage: React.FC = () => {
 };
 
 export default InstitutionalPage;
-

@@ -2,7 +2,7 @@ import {
   LayoutDashboard, Users, ClipboardList, Calendar, FileText, MessageSquare, 
   Settings, BarChart3, Palette, Activity, FileStack,
   BookOpen, Zap, Globe, ShieldAlert,
-  User as UserIcon, Clock
+  User as UserIcon, Clock, Megaphone, HelpCircle
 } from 'lucide-react';
 import { UserRole, SidebarItem, Grade, ClassSchedule, User } from './types';
 
@@ -74,7 +74,9 @@ export const SIDEBAR_LINKS: SidebarItem[] = [
   { icon: Settings, label: 'Definições do Sistema', path: '/admin/branding', roles: [UserRole.ADMIN] },
 
   { icon: BookOpen, label: 'Biblioteca Digital', path: '/biblioteca', roles: Object.values(UserRole) },
+  { icon: Megaphone, label: 'Mural de Avisos', path: '/avisos', roles: Object.values(UserRole) },
   { icon: MessageSquare, label: 'Comunicação', path: '/mensagens', roles: Object.values(UserRole) },
+  { icon: HelpCircle, label: 'Ajuda (FAQ)', path: '/ajuda', roles: Object.values(UserRole) },
 ];
 
 const generateMockGrades = (): Grade[] => {
@@ -149,7 +151,3 @@ const generateFullSchedule = (): ClassSchedule[] => {
 };
 
 export const MOCK_SCHEDULE: ClassSchedule[] = generateFullSchedule();
-
-
-
-

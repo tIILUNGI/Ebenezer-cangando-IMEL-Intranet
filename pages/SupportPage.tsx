@@ -10,15 +10,15 @@ const SupportPage: React.FC = () => {
     <div className="min-h-screen bg-white dark:bg-slate-900 p-8 md:p-16 animate-fade">
       <div className="max-w-4xl mx-auto space-y-12">
         <Link to="/" className="inline-flex items-center gap-2 text-primary font-bold hover:underline">
-          <ArrowLeft size={18} /> Voltar ao Início
+          <ArrowLeft size={18} /> Voltar ao InÃ­cio
         </Link>
         
         <header className="space-y-4">
           <div className="w-16 h-16 bg-orange-50 text-orange-600 rounded-3xl flex items-center justify-center">
             <HelpCircle size={32} />
           </div>
-          <h1 className="text-4xl font-black text-slate-900 dark:text-white">Suporte Técnico</h1>
-          <p className="text-slate-500">Estamos aqui para ajudar com qualquer dificuldade de acesso ou utilização.</p>
+          <h1 className="text-4xl font-black text-slate-900 dark:text-white">Suporte TÃ©cnico</h1>
+          <p className="text-slate-500">Estamos aqui para ajudar com qualquer dificuldade de acesso ou utilizaÃ§Ã£o.</p>
         </header>
 
         <div className="grid md:grid-cols-2 gap-8">
@@ -39,10 +39,10 @@ const SupportPage: React.FC = () => {
           <div className="p-8 bg-primary text-white rounded-[2.5rem] space-y-6">
             <h2 className="text-xl font-black uppercase">Problemas Comuns</h2>
             <ul className="space-y-2 text-sm opacity-90">
-              <li>• Esqueci a minha palavra-passe</li>
-              <li>• Erro ao visualizar pauta de notas</li>
-              <li>• Meu número de processo não é reconhecido</li>
-              <li>• Dificuldade em baixar arquivos da biblioteca</li>
+              <li>â€¢ Esqueci a minha palavra-passe</li>
+              <li>â€¢ Erro ao visualizar pauta de notas</li>
+              <li>â€¢ Meu nÃºmero de processo nÃ£o Ã© reconhecido</li>
+              <li>â€¢ Dificuldade em baixar arquivos da biblioteca</li>
             </ul>
           </div>
         </div>
@@ -60,4 +60,3 @@ const SupportPage: React.FC = () => {
 };
 
 export default SupportPage;
-

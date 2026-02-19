@@ -8,36 +8,36 @@ const PrivacyPage: React.FC = () => {
     <div className="min-h-screen bg-white dark:bg-slate-900 p-8 md:p-16 animate-fade">
       <div className="max-w-3xl mx-auto space-y-12">
         <Link to="/" className="inline-flex items-center gap-2 text-primary font-bold hover:underline">
-          <ArrowLeft size={18} /> Voltar ao InÌcio
+          <ArrowLeft size={18} /> Voltar ao In√≠cio
         </Link>
         
         <header className="space-y-4">
           <div className="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-3xl flex items-center justify-center">
             <Lock size={32} />
           </div>
-          <h1 className="text-4xl font-black text-slate-900 dark:text-white">PolÌtica de Privacidade</h1>
-          <p className="text-slate-500">Privacidade e ProteÁ„o de Dados AcadÈmicos</p>
+          <h1 className="text-4xl font-black text-slate-900 dark:text-white">Pol√≠tica de Privacidade</h1>
+          <p className="text-slate-500">Privacidade e Prote√ß√£o de Dados Acad√©micos</p>
         </header>
 
         <article className="prose prose-slate dark:prose-invert max-w-none space-y-8">
           <section className="space-y-4">
             <h2 className="text-2xl font-black text-slate-800 dark:text-white uppercase tracking-tight">Recolha de Dados</h2>
             <p className="text-slate-600 dark:text-slate-400 leading-relaxed">
-              O Intra IMEL recolhe dados estritamente necess·rios para a gest„o acadÈmica, incluindo nome, n˙mero de processo, notas, assiduidade e registos de acesso.
+              O Intra IMEL recolhe dados estritamente necess√°rios para a gest√£o acad√©mica, incluindo nome, n√∫mero de processo, notas, assiduidade e registos de acesso.
             </p>
           </section>
 
           <section className="space-y-4">
-            <h2 className="text-2xl font-black text-slate-800 dark:text-white uppercase tracking-tight">SeguranÁa da InformaÁ„o</h2>
+            <h2 className="text-2xl font-black text-slate-800 dark:text-white uppercase tracking-tight">Seguran√ßa da Informa√ß√£o</h2>
             <p className="text-slate-600 dark:text-slate-400 leading-relaxed">
-              Implementamos protocolos de seguranÁa modernos para garantir que as suas informaÁıes n„o sejam acedidas por pessoas n„o autorizadas. Todos os lanÁamentos de notas s„o auditados.
+              Implementamos protocolos de seguran√ßa modernos para garantir que as suas informa√ß√µes n√£o sejam acedidas por pessoas n√£o autorizadas. Todos os lan√ßamentos de notas s√£o auditados.
             </p>
           </section>
 
           <section className="space-y-4">
             <h2 className="text-2xl font-black text-slate-800 dark:text-white uppercase tracking-tight">Direitos do Utilizador</h2>
             <p className="text-slate-600 dark:text-slate-400 leading-relaxed">
-              Alunos e Encarregados tÍm o direito de solicitar a retificaÁ„o de dados incorretos atravÈs da Secretaria AcadÈmica presencialmente.
+              Alunos e Encarregados t√™m o direito de solicitar a retifica√ß√£o de dados incorretos atrav√©s da Secretaria Acad√©mica presencialmente.
             </p>
           </section>
         </article>
@@ -47,4 +47,3 @@ const PrivacyPage: React.FC = () => {
 };
 
 export default PrivacyPage;
-

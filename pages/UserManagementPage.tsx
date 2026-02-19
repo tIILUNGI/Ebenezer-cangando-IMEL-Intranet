@@ -16,10 +16,13 @@ const UserManagementPage: React.FC<Props> = ({ mode = 'full' }) => {
   const [formData, setFormData] = useState<Partial<User>>({
     name: '',
     processNumber: '',
+    bi: '',
     role: UserRole.ALUNO,
     turma: '',
     password: '123456',
-    isActive: true
+    isActive: true,
+    coordinatorType: null,
+    coordinatedEntity: ''
   });
 
   const canEdit = currentUser?.role === UserRole.ADMIN;
@@ -33,7 +36,17 @@ const UserManagementPage: React.FC<Props> = ({ mode = 'full' }) => {
 
   const handleOpenAdd = () => {
     setEditingUser(null);
-    setFormData({ name: '', processNumber: '', role: UserRole.ALUNO, turma: '', password: '123456', isActive: true });
+    setFormData({ 
+      name: '', 
+      processNumber: '', 
+      bi: '', 
+      role: UserRole.ALUNO, 
+      turma: '', 
+      password: '123456', 
+      isActive: true,
+      coordinatorType: null,
+      coordinatedEntity: ''
+    });
     setIsModalOpen(true);
   };
 
@@ -54,7 +67,7 @@ const UserManagementPage: React.FC<Props> = ({ mode = 'full' }) => {
   };
 
   const handleDelete = (id: string) => {
-    if (confirm('Tem certeza que deseja remover este usuário permanentemente?')) {
+    if (confirm('Tem certeza que deseja remover este usuÃ¡rio permanentemente?')) {
       deleteUser(id, currentUser?.name || 'Sistema');
     }
   };
@@ -87,16 +100,16 @@ const UserManagementPage: React.FC<Props> = ({ mode = 'full' }) => {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-black text-slate-900 dark:text-white">
-            {mode === 'alunos' ? 'Diretório de Estudantes' : 'Gestão Central de Usuários'}
+            {mode === 'alunos' ? 'DiretÃ³rio de Estudantes' : 'GestÃ£o Central de UsuÃ¡rios'}
           </h1>
           <p className="text-slate-500 dark:text-slate-400">
-            {isDiretor ? 'Visualização estratégica de acessos e perfis.' : 'Administre as credenciais e acessos da instituição.'}
+            {isDiretor ? 'VisualizaÃ§Ã£o estratÃ©gica de acessos e perfis.' : 'Administre as credenciais e acessos da instituiÃ§Ã£o.'}
           </p>
         </div>
         
         {canEdit && (
           <button className="flex items-center gap-2 px-6 py-2.5 bg-primary text-white rounded-xl text-sm font-bold shadow-lg shadow-blue-900/20 hover:scale-105 transition-all" onClick={handleOpenAdd}>
-            <Plus size={18} /> Novo Usuário
+            <Plus size={18} /> Novo UsuÃ¡rio
           </button>
         )}
       </div>
@@ -104,7 +117,7 @@ const UserManagementPage: React.FC<Props> = ({ mode = 'full' }) => {
       {isDiretor && (
         <div className="p-4 bg-emerald-50 dark:bg-emerald-900/10 border border-emerald-200 dark:border-emerald-800 rounded-2xl flex items-center gap-3 text-emerald-700 dark:text-emerald-400">
           <ShieldCheck size={20}/>
-          <span className="text-sm font-bold">Modo Auditoria: Visualização completa habilitada para Direção.</span>
+          <span className="text-sm font-bold">Modo Auditoria: VisualizaÃ§Ã£o completa habilitada para DireÃ§Ã£o.</span>
         </div>
       )}
 
@@ -113,7 +126,7 @@ const UserManagementPage: React.FC<Props> = ({ mode = 'full' }) => {
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
           <input 
             type="text" 
-            placeholder="Buscar nome ou nº de processo..."
+            placeholder="Buscar nome ou nÂº de processo..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full pl-12 pr-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:border-primary text-sm dark:text-white"
@@ -131,10 +144,11 @@ const UserManagementPage: React.FC<Props> = ({ mode = 'full' }) => {
             <thead>
               <tr className="bg-slate-50 dark:bg-slate-900/50 border-b border-slate-100 dark:border-slate-700">
                 <th className="px-8 py-5 text-xs font-black text-slate-400 uppercase tracking-widest">Identidade</th>
-                <th className="px-8 py-5 text-xs font-black text-slate-400 uppercase tracking-widest text-center">Nº Processo</th>
+                <th className="px-8 py-5 text-xs font-black text-slate-400 uppercase tracking-widest text-center">NÂº Processo</th>
+                <th className="px-8 py-5 text-xs font-black text-slate-400 uppercase tracking-widest text-center">NÂº BI</th>
                 <th className="px-8 py-5 text-xs font-black text-slate-400 uppercase tracking-widest text-center">Perfil</th>
-                <th className="px-8 py-5 text-xs font-black text-slate-400 uppercase tracking-widest text-center">Turma</th>
-                {canEdit && <th className="px-8 py-5 text-xs font-black text-slate-400 uppercase tracking-widest text-right">Ações</th>}
+                <th className="px-8 py-5 text-xs font-black text-slate-400 uppercase tracking-widest text-center">Turma/Coord.</th>
+                {canEdit && <th className="px-8 py-5 text-xs font-black text-slate-400 uppercase tracking-widest text-right">AÃ§Ãµes</th>}
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50 dark:divide-slate-700">
@@ -152,6 +166,9 @@ const UserManagementPage: React.FC<Props> = ({ mode = 'full' }) => {
                     <span className="text-sm font-mono font-medium text-slate-600 dark:text-slate-400">{user.processNumber}</span>
                   </td>
                   <td className="px-8 py-6 text-center">
+                    <span className="text-sm font-mono font-medium text-slate-600 dark:text-slate-400">{user.bi || '-'}</span>
+                  </td>
+                  <td className="px-8 py-6 text-center">
                     <span className={`inline-flex items-center px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest ${
                       user.role === UserRole.ADMIN ? 'bg-purple-50 text-purple-700' :
                       user.role === UserRole.PROFESSOR ? 'bg-blue-50 text-blue-700' :
@@ -161,7 +178,9 @@ const UserManagementPage: React.FC<Props> = ({ mode = 'full' }) => {
                       {user.role}
                     </span>
                   </td>
-                  <td className="px-8 py-6 text-center text-sm text-slate-500 dark:text-slate-400">{user.turma || '-'}</td>
+                  <td className="px-8 py-6 text-center text-sm text-slate-500 dark:text-slate-400">
+                    {user.turma || (user.coordinatorType ? `${user.coordinatorType === 'curso' ? 'Coord. Curso' : 'Coord. Turma'}: ${user.coordinatedEntity}` : '-')}
+                  </td>
                   {canEdit && (
                     <td className="px-8 py-6 text-right">
                       <div className="flex items-center justify-end gap-2">
@@ -182,42 +201,78 @@ const UserManagementPage: React.FC<Props> = ({ mode = 'full' }) => {
       </div>
 
       {isModalOpen && canEdit && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4">
-          <div className="bg-white dark:bg-slate-800 w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden animate-fade">
-            <div className="px-8 py-6 bg-primary text-white flex items-center justify-between">
-              <h3 className="text-xl font-bold">{editingUser ? 'Atualizar Perfil' : 'Cadastrar Usuário'}</h3>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4 animate-fade overflow-y-auto">
+          <div className="bg-white dark:bg-slate-800 w-full max-w-2xl rounded-3xl shadow-2xl overflow-hidden my-8">
+            <div className="px-6 py-5 bg-primary text-white flex items-center justify-between sticky top-0 z-10">
+              <h3 className="text-lg font-bold">{editingUser ? 'Atualizar Perfil' : 'Cadastrar UsuÃ¡rio'}</h3>
               <button onClick={() => setIsModalOpen(false)}><X /></button>
             </div>
-            <form onSubmit={handleSave} className="p-8 space-y-4">
-              <div>
-                <label className="block text-xs font-black text-slate-400 uppercase mb-2">Nome Completo</label>
-                <input type="text" required value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:border-primary dark:text-white" />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-black text-slate-400 uppercase mb-2">Nº Processo</label>
-                  <input type="text" required value={formData.processNumber} onChange={(e) => setFormData({...formData, processNumber: e.target.value})} className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:border-primary dark:text-white" />
+            <form onSubmit={handleSave} className="p-6 space-y-4">
+              <div className="grid md:grid-cols-2 gap-4">
+                <div className="md:col-span-2">
+                  <label className="block text-xs font-black text-slate-400 uppercase mb-1">Nome Completo</label>
+                  <input type="text" required value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:border-primary dark:text-white" />
                 </div>
                 <div>
-                  <label className="block text-xs font-black text-slate-400 uppercase mb-2">Perfil de Acesso</label>
-                  <select value={formData.role} onChange={(e) => setFormData({...formData, role: e.target.value as UserRole})} className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:border-primary dark:text-white">
+                  <label className="block text-xs font-black text-slate-400 uppercase mb-1">NÂº Processo</label>
+                  <input type="text" required value={formData.processNumber} onChange={(e) => setFormData({...formData, processNumber: e.target.value})} className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:border-primary dark:text-white" />
+                </div>
+                <div>
+                  <label className="block text-xs font-black text-slate-400 uppercase mb-1">NÂº do BI</label>
+                  <input type="text" required value={formData.bi || ''} onChange={(e) => setFormData({...formData, bi: e.target.value})} className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:border-primary dark:text-white" />
+                </div>
+                <div>
+                  <label className="block text-xs font-black text-slate-400 uppercase mb-1">Perfil de Acesso</label>
+                  <select value={formData.role} onChange={(e) => setFormData({...formData, role: e.target.value as UserRole})} className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:border-primary dark:text-white">
                     {Object.values(UserRole).map(role => <option key={role} value={role}>{role}</option>)}
                   </select>
                 </div>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-black text-slate-400 uppercase mb-2">Turma</label>
-                  <input type="text" value={formData.turma || ''} onChange={(e) => setFormData({...formData, turma: e.target.value})} className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:border-primary dark:text-white" />
-                </div>
-                <div>
-                  <label className="block text-xs font-black text-slate-400 uppercase mb-2">Senha Inicial</label>
-                  <input type="text" required value={formData.password || ''} onChange={(e) => setFormData({...formData, password: e.target.value})} className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:border-primary dark:text-white" />
+                  <label className="block text-xs font-black text-slate-400 uppercase mb-1">Turma (Alunos)</label>
+                  <input type="text" value={formData.turma || ''} onChange={(e) => setFormData({...formData, turma: e.target.value})} className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:border-primary dark:text-white" />
                 </div>
               </div>
-              <div className="pt-4 flex gap-3">
-                <button type="button" onClick={() => setIsModalOpen(false)} className="flex-1 py-4 border border-slate-200 dark:border-slate-700 rounded-2xl font-bold text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all">Cancelar</button>
-                <button type="submit" className="flex-1 py-4 bg-primary text-white rounded-2xl font-bold shadow-lg hover:scale-[1.02] transition-all">Efetuar Registro</button>
+
+              {formData.role === UserRole.PROFESSOR && (
+                <div className="p-4 bg-slate-50 dark:bg-slate-900/50 rounded-2xl border border-slate-100 dark:border-slate-700 space-y-3">
+                  <h4 className="text-xs font-bold text-primary uppercase">FunÃ§Ãµes de CoordenaÃ§Ã£o</h4>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-[10px] font-black text-slate-400 uppercase mb-1">Tipo</label>
+                      <select 
+                        value={formData.coordinatorType || ''} 
+                        onChange={(e) => setFormData({...formData, coordinatorType: e.target.value as any || null})} 
+                        className="w-full px-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:border-primary dark:text-white text-sm"
+                      >
+                        <option value="">Nenhuma</option>
+                        <option value="curso">Coordenador de Curso</option>
+                        <option value="turma">Coordenador de Turma</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-black text-slate-400 uppercase mb-1">
+                        {formData.coordinatorType === 'curso' ? 'Nome do Curso' : formData.coordinatorType === 'turma' ? 'Turma' : 'Entidade'}
+                      </label>
+                      <input 
+                        type="text" 
+                        disabled={!formData.coordinatorType}
+                        value={formData.coordinatedEntity || ''} 
+                        onChange={(e) => setFormData({...formData, coordinatedEntity: e.target.value})} 
+                        placeholder={formData.coordinatorType === 'curso' ? 'Ex: InformÃ¡tica' : 'Ex: 12 A'}
+                        className="w-full px-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:border-primary dark:text-white text-sm disabled:opacity-50" 
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <div>
+                <label className="block text-xs font-black text-slate-400 uppercase mb-1">Senha Inicial</label>
+                <input type="text" required value={formData.password || ''} onChange={(e) => setFormData({...formData, password: e.target.value})} className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:border-primary dark:text-white" />
+              </div>
+              <div className="pt-2 flex gap-3">
+                <button type="button" onClick={() => setIsModalOpen(false)} className="flex-1 py-3 border border-slate-200 dark:border-slate-700 rounded-xl font-bold text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all text-sm">Cancelar</button>
+                <button type="submit" className="flex-1 py-3 bg-primary text-white rounded-xl font-bold shadow-lg hover:scale-[1.02] transition-all text-sm">Salvar Dados</button>
               </div>
             </form>
           </div>
@@ -228,4 +283,3 @@ const UserManagementPage: React.FC<Props> = ({ mode = 'full' }) => {
 };
 
 export default UserManagementPage;
-

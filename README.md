@@ -115,3 +115,45 @@ Configurar no painel do Netlify:
 
 ## Observação Técnica
 Os dados são armazenados localmente no navegador (`localStorage`). Para um ambiente multiutilizador real, é necessário backend e base de dados.
+
+---
+
+## Funcionalidades Detalhadas por Perfil
+
+### 1. Aluno
+*   **Dashboard:** Visão geral com Média Global, Taxa de Presença, Faltas Totais e Provas Agendadas.
+*   **Minhas Notas:** Visualização da Mini-Pauta com notas de MAC, NPP, NPT e Média por disciplina. Opção de baixar boletim em HTML.
+*   **Assiduidade:** Relatório detalhado de faltas por disciplina e gráfico de aproveitamento de presença. Botão para justificar faltas via WhatsApp.
+*   **Horário:** Grade horária semanal da turma.
+*   **Biblioteca:** Acesso para baixar manuais, fichas e pautas.
+*   **Mensagens:** Comunicação com colegas da turma e professores.
+*   **Avisos:** Recebimento de comunicados da Direção e Professores.
+
+### 2. Professor
+*   **Dashboard:** Resumo das turmas e atalhos rápidos.
+*   **Lançamento de Notas:** Interface para inserir e editar notas (MAC, NPP, NPT) e faltas dos alunos vinculados às suas disciplinas. Cálculo automático de médias.
+*   **Horário:** Visualização da carga horária docente.
+*   **Biblioteca:** Upload de materiais didáticos (PDF, DOC, ZIP) para os alunos.
+*   **Avisos:** Criação de avisos para os alunos.
+*   **Coordenação (se atribuído):**
+    *   **Coordenador de Curso:** Visão geral estatística do curso, total de alunos/turmas e envio de mensagens em massa (Comunicado Geral).
+    *   **Coordenador de Turma:** Lista de estudantes da turma coordenada, status da conta e médias gerais.
+
+### 3. Encarregado de Educação
+*   **Dashboard:** Seleção do educando (caso tenha mais de um) para visualizar os dados.
+*   **Acompanhamento:** Acesso espelhado às Notas, Assiduidade e Horário do educando selecionado.
+*   **Comunicação:** Canal direto para mensagens com a escola.
+
+### 4. Diretor
+*   **Dashboard Estratégico:** KPIs institucionais (Matrículas, Aprovação, Abandono).
+*   **Estatísticas Académicas:** Gráficos de aprovação por classe e ranking de cursos.
+*   **Monitorização Docente:** Acompanhamento do lançamento de notas e pontualidade dos professores.
+*   **Institucional:** Visão da estrutura escolar (Cursos, Turmas, Salas) e Organograma.
+*   **Auditoria:** Acesso aos logs de segurança do sistema.
+*   **Avisos:** Criação de avisos globais para Professores e Alunos.
+
+### 5. Administrador
+*   **Gestão de Usuários:** Criação, edição e remoção de contas. Definição de perfis, atribuição de coordenações e reset de senhas.
+*   **Configuração do Sistema (Branding):** Personalização do nome da escola, sigla e cores do sistema.
+*   **Auditoria:** Visualização e exportação (CSV) de todos os registros de atividades do sistema.
+*   **Gestão de Dados:** Opção para resetar o banco de dados local (localStorage).

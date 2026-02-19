@@ -12,10 +12,10 @@ const AcademicStatsPage: React.FC = () => {
   const { theme } = useSettings();
 
   const approvalData = [
-    { name: '10ª Classe', aprovados: 85, reprovados: 15 },
-    { name: '11ª Classe', aprovados: 78, reprovados: 22 },
-    { name: '12ª Classe', aprovados: 92, reprovados: 8 },
-    { name: '13ª Classe', aprovados: 88, reprovados: 12 },
+    { name: '10Âª Classe', aprovados: 85, reprovados: 15 },
+    { name: '11Âª Classe', aprovados: 78, reprovados: 22 },
+    { name: '12Âª Classe', aprovados: 92, reprovados: 8 },
+    { name: '13Âª Classe', aprovados: 88, reprovados: 12 },
   ];
 
   const COLORS = ['#10b981', '#ef4444', '#6366f1', '#f59e0b'];
@@ -39,8 +39,8 @@ const AcademicStatsPage: React.FC = () => {
     <div className="space-y-8 animate-fade">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-black text-slate-900 dark:text-white">Estatísticas Académicas</h1>
-          <p className="text-slate-500 dark:text-slate-400">Análise de desempenho por nível e curso.</p>
+          <h1 className="text-3xl font-black text-slate-900 dark:text-white">EstatÃ­sticas AcadÃ©micas</h1>
+          <p className="text-slate-500 dark:text-slate-400">AnÃ¡lise de desempenho por nÃ­vel e curso.</p>
         </div>
         <div className="flex gap-2">
           <button className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold text-slate-600 dark:text-slate-300">
@@ -54,7 +54,7 @@ const AcademicStatsPage: React.FC = () => {
 
       <div className="grid lg:grid-cols-2 gap-8">
         <div className="bg-white dark:bg-slate-800 p-8 rounded-[2.5rem] shadow-sm border border-slate-100 dark:border-slate-700">
-          <h3 className="text-xl font-bold mb-8 flex items-center gap-2"><TrendingUp className="text-emerald-500" /> Aprovação vs Reprovação</h3>
+          <h3 className="text-xl font-bold mb-8 flex items-center gap-2"><TrendingUp className="text-emerald-500" /> AprovaÃ§Ã£o vs ReprovaÃ§Ã£o</h3>
           <div className="h-80">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={approvalData}>
@@ -75,9 +75,9 @@ const AcademicStatsPage: React.FC = () => {
           <div className="space-y-6">
             {[
               { curso: 'Contabilidade', perc: 94, students: 450 },
-              { curso: 'Gestão Empresarial', perc: 88, students: 620 },
-              { curso: 'Economia Política', perc: 82, students: 510 },
-              { curso: 'Informática de Gestão', perc: 75, students: 380 },
+              { curso: 'GestÃ£o Empresarial', perc: 88, students: 620 },
+              { curso: 'Economia PolÃ­tica', perc: 82, students: 510 },
+              { curso: 'InformÃ¡tica de GestÃ£o', perc: 75, students: 380 },
             ].map((c, i) => (
               <div key={c.curso} className="flex items-center gap-4 p-4 bg-slate-50 dark:bg-slate-900 rounded-2xl">
                 <div className="w-10 h-10 bg-primary text-white rounded-full flex items-center justify-center font-black">#{i+1}</div>
@@ -101,8 +101,8 @@ const AcademicStatsPage: React.FC = () => {
             <AlertCircle size={40} />
           </div>
           <div>
-            <h4 className="text-xl font-bold text-primary">Atenção Estratégica</h4>
-            <p className="text-slate-600 dark:text-slate-400">Há um declínio de 4% no aproveitamento de Matemática na 11ª Classe comparado ao ano anterior.</p>
+            <h4 className="text-xl font-bold text-primary">AtenÃ§Ã£o EstratÃ©gica</h4>
+            <p className="text-slate-600 dark:text-slate-400">HÃ¡ um declÃ­nio de 4% no aproveitamento de MatemÃ¡tica na 11Âª Classe comparado ao ano anterior.</p>
           </div>
         </div>
         <button className="px-6 py-3 bg-primary text-white rounded-xl font-bold hover:scale-105 transition-all">Ver Detalhes</button>
@@ -112,4 +112,3 @@ const AcademicStatsPage: React.FC = () => {
 };
 
 export default AcademicStatsPage;
-
