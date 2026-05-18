@@ -1,10 +1,10 @@
-
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { LogOut, ChevronLeft, ChevronRight, X, GraduationCap } from 'lucide-react';
 import { useAuth, useSettings, useSystemAdmin } from '../App';
 import { SIDEBAR_LINKS } from '../constants';
 import { UserRole } from '../types';
+import Swal from 'sweetalert2';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -18,11 +18,24 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggle }) => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    logout();
-    navigate('/login');
+    Swal.fire({
+      title: 'Tem certeza?',
+      text: 'Deseja realmente sair do sistema?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#ef4444',
+      cancelButtonColor: '#94a3b8',
+      confirmButtonText: 'Sim, sair',
+      cancelButtonText: 'Cancelar',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        logout();
+        navigate('/login');
+      }
+    });
   };
 
-  const filteredLinks = SIDEBAR_LINKS.filter(link => 
+  const filteredLinks = SIDEBAR_LINKS.filter((link) =>
     user ? link.roles.includes(user.role) : false
   );
 
@@ -30,13 +43,13 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggle }) => {
     <>
       {/* Overlay for Mobile */}
       {isOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-black/50 z-30 lg:hidden backdrop-blur-sm"
           onClick={toggle}
         ></div>
       )}
 
-      <aside 
+      <aside
         className={`fixed left-0 top-0 h-screen z-40 bg-primary text-white transition-all duration-300 shadow-xl overflow-hidden flex flex-col 
           ${isOpen ? 'w-64 translate-x-0' : 'w-20 lg:translate-x-0 -translate-x-full'}`}
       >
@@ -48,13 +61,20 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggle }) => {
             </div>
             {isOpen && (
               <div className="flex flex-col truncate flex-1">
-                <span className="font-bold text-lg leading-tight truncate">{settings.schoolAcronym}</span>
-                <span className="text-[10px] text-white/50 tracking-widest uppercase font-black">Sistema Interno</span>
+                <span className="font-bold text-lg leading-tight truncate">
+                  {settings.schoolAcronym}
+                </span>
+                <span className="text-[10px] text-white/50 tracking-widest uppercase font-black">
+                  Sistema Interno
+                </span>
               </div>
             )}
           </div>
           {/* Close button for mobile inside sidebar */}
-          <button onClick={toggle} className="lg:hidden p-2 text-white/50 hover:text-white transition-colors ml-2">
+          <button
+            onClick={toggle}
+            className="lg:hidden p-2 text-white/50 hover:text-white transition-colors ml-2"
+          >
             <X size={20} />
           </button>
         </div>
@@ -65,24 +85,32 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggle }) => {
             <NavLink
               key={`${link.path}-${idx}`}
               to={link.path}
-              onClick={() => { if(window.innerWidth < 1024) toggle(); }}
+              onClick={() => {
+                if (window.innerWidth < 1024) toggle();
+              }}
               className={({ isActive }) => `
                 flex items-center gap-4 px-4 py-3 transition-all duration-200 rounded-xl
                 ${isActive ? 'sidebar-item-active text-white bg-white/10' : 'text-white/60 hover:text-white hover:bg-white/5'}
               `}
             >
               <link.icon className="w-5 h-5 flex-shrink-0" />
-              {isOpen && <span className="text-sm font-bold uppercase tracking-wide truncate">{link.label}</span>}
-              {!isOpen && <div className="hidden lg:block absolute left-full ml-4 px-2 py-1 bg-slate-800 text-white text-[10px] rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                {link.label}
-              </div>}
+              {isOpen && (
+                <span className="text-sm font-bold uppercase tracking-wide truncate">
+                  {link.label}
+                </span>
+              )}
+              {!isOpen && (
+                <div className="hidden lg:block absolute left-full ml-4 px-2 py-1 bg-slate-800 text-white text-[10px] rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                  {link.label}
+                </div>
+              )}
             </NavLink>
           ))}
         </nav>
 
         {/* Footer */}
         <div className="p-4 border-t border-white/10 space-y-4">
-          <button 
+          <button
             onClick={handleLogout}
             className={`w-full flex items-center gap-4 px-4 py-3 text-white/60 hover:text-red-400 hover:bg-red-400/10 rounded-xl transition-all
               ${!isOpen ? 'justify-center' : ''}`}
@@ -93,7 +121,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggle }) => {
         </div>
 
         {/* Toggle Button for Desktop - Floating */}
-        <button 
+        <button
           onClick={toggle}
           className="absolute bottom-6 right-4 hidden lg:flex items-center justify-center bg-white/10 hover:bg-white/20 text-white p-2 rounded-xl transition-all"
         >

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { HelpCircle, ArrowLeft, Mail, Phone, MessageSquare } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -9,16 +8,21 @@ const SupportPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-white dark:bg-slate-900 p-8 md:p-16 animate-fade">
       <div className="max-w-4xl mx-auto space-y-12">
-        <Link to="/" className="inline-flex items-center gap-2 text-primary font-bold hover:underline">
+        <Link
+          to="/"
+          className="inline-flex items-center gap-2 text-primary font-bold hover:underline"
+        >
           <ArrowLeft size={18} /> Voltar ao Início
         </Link>
-        
+
         <header className="space-y-4">
           <div className="w-16 h-16 bg-orange-50 text-orange-600 rounded-3xl flex items-center justify-center">
             <HelpCircle size={32} />
           </div>
           <h1 className="text-4xl font-black text-slate-900 dark:text-white">Suporte Técnico</h1>
-          <p className="text-slate-500">Estamos aqui para ajudar com qualquer dificuldade de acesso ou utilização.</p>
+          <p className="text-slate-500">
+            Estamos aqui para ajudar com qualquer dificuldade de acesso ou utilização.
+          </p>
         </header>
 
         <div className="grid md:grid-cols-2 gap-8">
@@ -29,7 +33,12 @@ const SupportPage: React.FC = () => {
                 <Mail className="text-primary" />
                 <span>suporte@imel.edu.ao</span>
               </div>
-              <a href={whatsappLink} target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 text-slate-600 dark:text-slate-300">
+              <a
+                href={whatsappLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-4 text-slate-600 dark:text-slate-300"
+              >
                 <Phone className="text-primary" />
                 <span>+244 938 229 459 (WhatsApp)</span>
               </a>
@@ -51,7 +60,8 @@ const SupportPage: React.FC = () => {
           <MessageSquare className="mx-auto text-primary" size={48} />
           <h2 className="text-2xl font-black dark:text-white">Atendimento Presencial</h2>
           <p className="text-slate-500 max-w-lg mx-auto leading-relaxed">
-            Caso o problema persista, dirija-se ao Gabinete de TI no Bloco B do IMEL, de Segunda a Sexta, das 08:00 às 15:00.
+            Caso o problema persista, dirija-se ao Gabinete de TI no Bloco B do IMEL, de Segunda a
+            Sexta, das 08:00 às 15:00.
           </p>
         </div>
       </div>

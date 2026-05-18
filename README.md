@@ -1,6 +1,21 @@
 # SIG-IMEL - Sistema Interno de Gestão Escolar
 
-Frontend em React com persistência em `localStorage`. Sem backend.
+Frontend em React + Backend Node.js (Express/SQLite) com armazenamento em `localStorage` para modo offline.
+
+---
+
+## Arquitetura
+
+### Frontend
+- React 19 + TypeScript + Vite
+- Tailwind CSS + Recharts
+- Deploy: Netlify
+
+### Backend
+- Node.js + Express
+- SQLite (desenvolvimento) / PostgreSQL (produção)
+- API RESTful em `/api/*`
+- Autenticação JWT
 
 ---
 
@@ -13,32 +28,38 @@ Frontend em React com persistência em `localStorage`. Sem backend.
 - [x] Troca de palavra-passe no perfil com validação
 
 ### Comunicação e Mensagens
-- [x] Mensagens persistentes no `localStorage`
+- [x] Mensagens persistentes (API ou localStorage)
 - [x] Mensagens aparecem no destinatário após logout/login
 - [x] Filtro de destinatários: não mostra o logado
 - [x] Filtro por turma: só mesma turma aparece
 
 ### Biblioteca Digital
-- [x] Upload real de arquivo (base64 no `localStorage`)
+- [x] Upload real de arquivo (armazenamento local via backend)
 - [x] Download real de arquivo
 - [x] Contador de downloads
 
 ### Notas e Pautas
 - [x] Lançamento de notas com cálculo de média
-- [x] Boletim com download (arquivo local)
+- [x] Boletim com download (arquivo local ou API)
 
 ### Auditoria e Logs
 - [x] Logs de ações (criar/alterar utilizador, notas, mensagens, biblioteca)
 
 ### IA e Interação
 - [x] Insight automático no dashboard
-- [x] Perguntas à IA sobre o sistema (botão global)
+- [x] Perguntas à IA sobre o sistema (botão global - Gemini API)
 
 ### Suporte
 - [x] WhatsApp abre diretamente: `+244 938 229 459`
 
 ### Ano Lectivo
 - [x] Atualizado para `2025/2026`
+
+### Funcionalidades Adicionais
+- [x] Tema claro/escuro (toggle)
+- [x] Idioma PT/EN (i18n)
+- [x] Notificações de browser
+- [x] Netlify Functions para envio de emails (SMTP)
 
 ---
 
@@ -78,16 +99,26 @@ Frontend em React com persistência em `localStorage`. Sem backend.
 
 ## Execução Local
 
+### Frontend
 ```bash
 npm install
 npm run dev
 ```
 
+### Backend
+```bash
+cd backend
+npm install
+npm run dev
+```
+
+O backend roda em `http://localhost:5000`
+
 ---
 
 ## Deploy no Netlify
 
-Arquivo `netlify.toml` já configurado:
+Arquivo `netlify.toml` configurado:
 
 ```toml
 [build]
@@ -101,7 +132,7 @@ Arquivo `netlify.toml` já configurado:
 ```
 
 Configurar no painel do Netlify:
-- `VITE_GEMINI_API_KEY`
+- `VITE_GEMINI_API_KEY` - API key do Google Gemini
 
 ### Envio de Boas-Vindas (SMTP)
 Configurar no painel do Netlify:
@@ -113,8 +144,25 @@ Configurar no painel do Netlify:
 
 ---
 
+## Estrutura do Projeto
+
+```
+/
+├── pages/           # Páginas da aplicação
+├── components/      # Componentes reutilizáveis
+├── backend/         # API Node.js/Express
+│   ├── src/routes/  # Rotas da API
+│   ├── src/controllers/
+│   └── server.js
+├── netlify/functions/ # Netlify Functions (send-welcome.js)
+└── types.ts         # Tipos TypeScript
+```
+
+---
+
 ## Observação Técnica
-Os dados são armazenados localmente no navegador (`localStorage`). Para um ambiente multiutilizador real, é necessário backend e base de dados.
+
+Os dados podem ser armazenados localmente no navegador (`localStorage`) para ambiente offline ou via API com backend SQLite/PostgreSQL para ambiente multiutilizador. O sistema detecta automaticamente a disponibilidade da API e faz fallback para localStorage quando offline.
 
 ---
 
