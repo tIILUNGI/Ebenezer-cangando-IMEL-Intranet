@@ -11,13 +11,7 @@ import {
   AuditLog,
   Notification,
 } from './types';
-import {
-  DEFAULT_PRIMARY_COLOR,
-  DEFAULT_SECONDARY_COLOR,
-  TEST_USERS,
-  MOCK_GRADES,
-  MOCK_SCHEDULE,
-} from './constants';
+import { DEFAULT_PRIMARY_COLOR, DEFAULT_SECONDARY_COLOR, TEST_USERS, MOCK_GRADES, MOCK_SCHEDULE, DEMO_LIBRARY, DEMO_ANNOUNCEMENTS } from './constants';
 import {
   login as apiLogin,
   logout as apiLogout,
@@ -198,23 +192,69 @@ const DatabaseProvider: React.FC<{ children: React.ReactNode }> = ({ children })
     }
   };
 
+  // Detect backend server availability on first mount (2s timeout, probe the health endpoint)
+  const [serverReachable, setServerReachable] = useState(() => {
+    const cached = localStorage.getItem('imel_server_reachable');
+    if (cached !== null) {
+      return cached === 'true';
+    }
+    return true; // Default assume reachable until proven otherwise
+  });
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 2000);
+      try {
+        const r = await fetch('http://localhost:5000/api/health', { signal: controller.signal });
+        clearTimeout(timeoutId);
+        if (!cancelled) {
+          const reachable = r.ok;
+          setServerReachable(reachable);
+          localStorage.setItem('imel_server_reachable', reachable ? 'true' : 'false');
+        }
+      } catch {
+        clearTimeout(timeoutId);
+        if (!cancelled) {
+          setServerReachable(false);
+          localStorage.setItem('imel_server_reachable', 'false');
+        }
+      }
+    })();
+    return () => { cancelled = true; };
+  }, []);
+
   const refreshData = async () => {
-    const results = await Promise.allSettled([
-      fetchFromAPI(fetchUsers, TEST_USERS, 'imel_db_users'),
-      fetchFromAPI(fetchGrades, MOCK_GRADES, 'imel_db_grades'),
-      fetchFromAPI(fetchSchedule, MOCK_SCHEDULE, 'imel_db_schedules'),
-      fetchFromAPI(fetchNotifications, JSON.parse(localStorage.getItem('imel_db_notifs') || '[]'), 'imel_db_notifs'),
-      fetchFromAPI(fetchLibrary, JSON.parse(localStorage.getItem('imel_db_library') || '[]'), 'imel_db_library'),
-      fetchFromAPI(fetchMessages, JSON.parse(localStorage.getItem('imel_db_messages') || '[]'), 'imel_db_messages'),
-      fetchFromAPI(fetchAuditLogs, JSON.parse(localStorage.getItem('imel_db_logs') || '[]'), 'imel_db_logs'),
-    ]);
-    setUsers(results[0].status === 'fulfilled' ? results[0].value : JSON.parse(localStorage.getItem('imel_db_users') || '[]'));
-    setGrades(results[1].status === 'fulfilled' ? results[1].value : JSON.parse(localStorage.getItem('imel_db_grades') || '[]'));
-    setSchedules(results[2].status === 'fulfilled' ? results[2].value : JSON.parse(localStorage.getItem('imel_db_schedules') || '[]'));
-    setNotifications(results[3].status === 'fulfilled' ? results[3].value : JSON.parse(localStorage.getItem('imel_db_notifs') || '[]'));
-    setLibrary(results[4].status === 'fulfilled' ? results[4].value : JSON.parse(localStorage.getItem('imel_db_library') || '[]'));
-    setMessages(results[5].status === 'fulfilled' ? results[5].value : JSON.parse(localStorage.getItem('imel_db_messages') || '[]'));
-    setAuditLogs(results[6].status === 'fulfilled' ? results[6].value : JSON.parse(localStorage.getItem('imel_db_logs') || '[]'));
+    const usersResult = serverReachable
+      ? await fetchFromAPI(fetchUsers, TEST_USERS, 'imel_db_users')
+      : JSON.parse(localStorage.getItem('imel_db_users') || JSON.stringify(TEST_USERS));
+    const gradesResult = serverReachable
+      ? await fetchFromAPI(fetchGrades, MOCK_GRADES, 'imel_db_grades')
+      : JSON.parse(localStorage.getItem('imel_db_grades') || JSON.stringify(MOCK_GRADES));
+    const schedulesResult = serverReachable
+      ? await fetchFromAPI(fetchSchedule, MOCK_SCHEDULE, 'imel_db_schedules')
+      : JSON.parse(localStorage.getItem('imel_db_schedules') || JSON.stringify(MOCK_SCHEDULE));
+    const notificationsResult = serverReachable
+      ? await fetchFromAPI(fetchNotifications, JSON.parse(localStorage.getItem('imel_db_notifs') || '[]'), 'imel_db_notifs')
+      : JSON.parse(localStorage.getItem('imel_db_notifs') || '[]');
+    const libraryResult = serverReachable
+      ? await fetchFromAPI(fetchLibrary, JSON.parse(localStorage.getItem('imel_db_library') || '[]'), 'imel_db_library')
+      : JSON.parse(localStorage.getItem('imel_db_library') || '[]');
+    const messagesResult = serverReachable
+      ? await fetchFromAPI(fetchMessages, JSON.parse(localStorage.getItem('imel_db_messages') || '[]'), 'imel_db_messages')
+      : JSON.parse(localStorage.getItem('imel_db_messages') || '[]');
+    const auditLogsResult = serverReachable
+      ? await fetchFromAPI(fetchAuditLogs, JSON.parse(localStorage.getItem('imel_db_logs') || '[]'), 'imel_db_logs')
+      : JSON.parse(localStorage.getItem('imel_db_logs') || '[]');
+
+    setUsers(usersResult);
+    setGrades(gradesResult);
+    setSchedules(schedulesResult);
+    setNotifications(notificationsResult);
+    setLibrary(libraryResult);
+    setMessages(messagesResult);
+    setAuditLogs(auditLogsResult);
   };
 
   useEffect(() => {
@@ -239,83 +279,18 @@ const DatabaseProvider: React.FC<{ children: React.ReactNode }> = ({ children })
       } catch (err) {
         console.warn('Error in seeding local data:', err);
       }
-      if (!localStorage.getItem('imel_db_library')) {
-        // Seed library with default resources for all students
-        const defaultLibrary = [
-          {
-            id: 'lib-1',
-            title: 'Manual do Aluno IMEL',
-            subject: 'Geral',
-            type: 'PDF',
-            author: 'Direção',
-            authorId: '4',
-            date: new Date().toLocaleDateString(),
-            downloads: 0,
-            size: '2.5MB',
-            fileUrl: 'https://example.com/manual-aluno.pdf',
-            turmaTarget: 'Todas',
-          },
-          {
-            id: 'lib-2',
-            title: 'Regulamento Escolar',
-            subject: 'Geral',
-            type: 'PDF',
-            author: 'Direção',
-            authorId: '4',
-            date: new Date().toLocaleDateString(),
-            downloads: 0,
-            size: '1.2MB',
-            fileUrl: 'https://example.com/regulamento.pdf',
-            turmaTarget: 'Todas',
-          },
-          {
-            id: 'lib-3',
-            title: 'Horário de Funcionamento',
-            subject: 'Geral',
-            type: 'PDF',
-            author: 'Secretaria',
-            authorId: 'sec-1',
-            date: new Date().toLocaleDateString(),
-            downloads: 0,
-            size: '0.5MB',
-            fileUrl: 'https://example.com/horario.pdf',
-            turmaTarget: 'Todas',
-          },
-        ];
-        localStorage.setItem('imel_db_library', JSON.stringify(defaultLibrary));
-      }
-      if (!localStorage.getItem('imel_db_messages')) {
-        localStorage.setItem('imel_db_messages', JSON.stringify([]));
-      }
-      if (!localStorage.getItem('imel_db_logs')) {
-        localStorage.setItem('imel_db_logs', JSON.stringify([]));
-      }
-      if (!localStorage.getItem('imel_db_notifs')) {
-        // Seed notifications with default announcements
-        const defaultNotifications = [
-          {
-            id: 'notif-1',
-            title: 'Boas-vindas ao Intra IMEL',
-            message: 'Bem-vindo ao sistema de gestão escolar do IMEL. Consulte regularmente o mural de avisos para ficar atualizado.',
-            type: 'announcement',
-            targetAudience: 'Todos',
-            timestamp: new Date().toLocaleString(),
-            read: false,
-            authorName: 'Direção',
-          },
-          {
-            id: 'notif-2',
-            title: 'Calendário de Provas',
-            message: 'O calendário de provas do primeiro trimestre já está disponível. Consulte a página de Horário.',
-            type: 'announcement',
-            targetAudience: UserRole.ALUNO,
-            timestamp: new Date().toLocaleString(),
-            read: false,
-            authorName: 'Direção',
-          },
-        ];
-        localStorage.setItem('imel_db_notifs', JSON.stringify(defaultNotifications));
-      }
+if (!localStorage.getItem('imel_db_library')) {
+         localStorage.setItem('imel_db_library', JSON.stringify(DEMO_LIBRARY));
+       }
+       if (!localStorage.getItem('imel_db_messages')) {
+         localStorage.setItem('imel_db_messages', JSON.stringify([]));
+       }
+       if (!localStorage.getItem('imel_db_logs')) {
+         localStorage.setItem('imel_db_logs', JSON.stringify([]));
+       }
+       if (!localStorage.getItem('imel_db_notifs')) {
+         localStorage.setItem('imel_db_notifs', JSON.stringify(DEMO_ANNOUNCEMENTS));
+       }
     };
     seedLocalData();
 

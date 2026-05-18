@@ -12,7 +12,6 @@ import {
   Image as ImageIcon,
 } from 'lucide-react';
 import { useDatabase, useAuth } from '../App';
-import { sendMessage as localSend } from '../src/api/index';
 import { User, UserRole } from '../types';
 import Swal from 'sweetalert2';
 
@@ -62,36 +61,12 @@ const MessagesPage: React.FC = () => {
     });
   }, [users, user, isProfessor, isAluno, isEncarregado, userTurma]);
 
-  // For professor: filter to students from classes they actually teach
-  // NOTE: This currently relies on message history as a proxy for class association
-  // Ideal implementation would use ClassSchedule data or professor's taught classes field
-  const visiblePeers = useMemo(() => {
-    if (!user) return [];
-    if (!isProfessor) return allowedPeers;
-
-    // Collect classes from existing conversations as a proxy for taught classes
-    const teacherClassesFromMessages = new Set<string>();
-    messages.forEach((m: any) => {
-      if (m.fromId === user.id) {
-        const peer = users.find((u) => u.id === m.toId);
-        if (peer?.turma) teacherClassesFromMessages.add(peer.turma);
-      }
-      if (m.toId === user.id) {
-        const peer = users.find((u) => u.id === m.fromId);
-        if (peer?.turma) teacherClassesFromMessages.add(peer.turma);
-      }
-    });
-
-    // If no message history, show all students (so professor can initiate conversations)
-    // In production, this should come from actual class assignments
-    if (teacherClassesFromMessages.size === 0) {
-      return allowedPeers.filter((u) => u.role === UserRole.ALUNO);
-    }
-    
-    return allowedPeers.filter((u) => 
-      u.turma && teacherClassesFromMessages.has(u.turma as string)
-    );
-  }, [users, user, isProfessor, messages, allowedPeers]);
+  // Searchable peers (allowed peers that match search term)
+  const searchablePeers = useMemo(() => {
+    if (!searchTerm) return allowedPeers;
+    const term = searchTerm.toLowerCase();
+    return allowedPeers.filter(u => u.name.toLowerCase().includes(term));
+  }, [allowedPeers, searchTerm]);
 
   // ---------------------------------------------------------------------------
   // Conversation threads — one per (user + peerId)
@@ -122,16 +97,6 @@ const MessagesPage: React.FC = () => {
       (a: any, b: any) => new Date(b.lastMessage.timestamp).getTime() - new Date(a.lastMessage.timestamp).getTime()
     );
   }, [messages, user]);
-
-  // Filter conversations by search
-  const filteredConversations = useMemo(() => {
-    if (!searchTerm) return conversations;
-    const term = searchTerm.toLowerCase();
-    return conversations.filter((c: any) => {
-      const peer = users.find((u) => u.id === c.peerId);
-      return peer?.name.toLowerCase().includes(term);
-    });
-  }, [conversations, users, searchTerm]);
 
   // Build active conversation's messages
   const activeThread = useMemo(() => {
@@ -173,10 +138,18 @@ const MessagesPage: React.FC = () => {
     if (!activePeer || !content.trim()) return;
     const trimmed = content.trim();
     setContent('');
+    // ctxSend writes to local state immediately (setMessages), so the message is
+    // visible in the chat right away. The backend sync (apiSendMessage) happens
+    // asynchronously in the background and does not block the UI.
     try {
       await ctxSend(activePeer.id, trimmed);
-    } catch {
-      Swal.fire({ icon: 'success', text: 'Mensagem enviada (local).', timer: 1500, showConfirmButton: false });
+    } catch (err) {
+      // If even the local write failed, inform the user
+      Swal.fire({
+        icon: 'error',
+        title: 'Erro ao enviar mensagem',
+        text: (err as any)?.message || 'Tente novamente.',
+      });
     }
     setTimeout(() => inputRef.current?.focus(), 100);
   };
@@ -226,106 +199,107 @@ const MessagesPage: React.FC = () => {
     );
   };
 
-  // ── Main layout ─────────────────────────────────────────────────────────
-  return (
-    <div className="flex h-[calc(100vh-8rem)] lg:h-[calc(100vh-9rem)] bg-slate-100 dark:bg-slate-900 rounded-3xl overflow-hidden border border-slate-200 dark:border-slate-700 shadow-lg">
-      {/* ══════════════════════════════════════════════
-          LEFT PANEL — Conversation List
-      ══════════════════════════════════════════════ */}
-      <div
-        className={`w-full sm:w-80 lg:w-96 flex flex-col bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700
-          ${mobileView === 'chat' ? 'hidden sm:flex' : 'flex'}`}
-      >
-        {/* Header */}
-        <div className="p-4 border-b border-slate-100 dark:border-slate-700 shrink-0">
-          <h2 className="text-lg font-black text-slate-800 dark:text-white flex items-center gap-2">
-            <MessageCircle size={20} className="text-primary" />
-            Mensagens
-          </h2>
-          <div className="mt-3 relative">
-            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-            <input
-              type="text"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Pesquisar conversa…"
-              className="w-full pl-9 pr-3 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-xl text-sm outline-none dark:text-white placeholder:text-slate-400"
-            />
-          </div>
-        </div>
+   // ── Main layout ─────────────────────────────────────────────────────────
+   return (
+     <div className="flex h-[calc(100vh-8rem)] lg:h-[calc(100vh-9rem)] bg-slate-100 dark:bg-slate-900 rounded-3xl overflow-hidden border border-slate-200 dark:border-slate-700 shadow-lg">
+       {/* ═════════════════════════════════════════════
+           LEFT PANEL — Conversation List
+       ═══════════════════════════════════════════════ */}
+       <div
+         className={`w-full sm:w-80 lg:w-96 flex flex-col bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700
+           ${mobileView === 'chat' ? 'hidden sm:flex' : 'flex'}`}
+       >
+         {/* Header */}
+         <div className="p-4 border-b border-slate-100 dark:border-slate-700 shrink-0">
+           <h2 className="text-lg font-black text-slate-800 dark:text-white flex items-center gap-2">
+             <MessageCircle size={20} className="text-primary" />
+             Mensagens
+           </h2>
+           <div className="mt-3 relative">
+             <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+             <input
+               type="text"
+               value={searchTerm}
+               onChange={(e) => setSearchTerm(e.target.value)}
+               placeholder="Pesquisar conversa…"
+               className="w-full pl-9 pr-3 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-xl text-sm outline-none dark:text-white placeholder:text-slate-400"
+             />
+           </div>
+         </div>
 
-        {/* Conversation list */}
-        <div className="flex-1 overflow-y-auto divide-y divide-slate-50 dark:divide-slate-700/50 scrollbar-hide">
-          {filteredConversations.length === 0 ? (
-            <div className="p-10 text-center">
-              <MessageCircle size={40} className="mx-auto text-slate-200 mb-3" />
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                Nenhuma conversa ainda
-              </p>
-              {isProfessor && (
-                <p className="text-[10px] text-slate-300 mt-1">
-                  Aguarde um aluno enviar uma mensagem.
-                </p>
-              )}
-            </div>
-          ) : (
-            filteredConversations.map((conv: any) => {
-              const peer = users.find((u) => u.id === conv.peerId);
-              if (!peer) return null;
-              const isActive = activePeer?.id === peer.id;
-              const unread = conv.unreadCount > 0;
-              return (
-                <button
-                  key={peer.id}
-                  onClick={() => handleSelectPeer(peer)}
-                  className={`w-full flex items-center gap-3 px-4 py-3 transition-colors text-left
-                    ${isActive
-                      ? 'bg-blue-50/60 dark:bg-blue-900/15'
-                      : 'hover:bg-slate-50 dark:hover:bg-slate-700/30'}`}
-                >
-                  {/* Avatar */}
-                  <div className="relative shrink-0">
-                    <div className={`w-11 h-11 rounded-full flex items-center justify-center font-black text-white text-sm
-                      ${isActive ? 'bg-primary' : 'bg-slate-300 dark:bg-slate-600 text-slate-700 dark:text-slate-200'}`}>
-                      {peer.name.charAt(0).toUpperCase()}
-                    </div>
-                    {unread && (
-                      <span className="absolute -top-0.5 -right-0.5 w-3 h-3 bg-emerald-500 border-2 border-white dark:border-slate-800 rounded-full" />
-                    )}
-                  </div>
+         {/* Conversation list */}
+         <div className="flex-1 overflow-y-auto divide-y divide-slate-50 dark:divide-slate-700/50 scrollbar-hide">
+           {searchablePeers.length === 0 && conversations.length === 0 ? (
+             <div className="p-10 text-center">
+               <MessageCircle size={40} className="mx-auto text-slate-200 mb-3" />
+               <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                 Nenhuma conversa ainda
+               </p>
+               {isProfessor && (
+                 <p className="text-[10px] text-slate-300 mt-1">
+                   Aguarde um aluno enviar uma mensagem.
+                 </p>
+               )}
+             </div>
+           ) : (
+             searchablePeers.map((peer) => {
+               // Find conversation for this peer
+               const conv = conversations.find(c => c.peerId === peer.id);
+               if (!conv) return null;
+               const isActive = activePeer?.id === peer.id;
+               const unread = conv.unreadCount > 0;
+               return (
+                 <button
+                   key={peer.id}
+                   onClick={() => handleSelectPeer(peer)}
+                   className={`w-full flex items-center gap-3 px-4 py-3 transition-colors text-left
+                     ${isActive
+                       ? 'bg-blue-50/60 dark:bg-blue-900/15'
+                       : 'hover:bg-slate-50 dark:hover:bg-slate-700/30'}`}
+                 >
+                   {/* Avatar */}
+                   <div className="relative shrink-0">
+                     <div className={`w-11 h-11 rounded-full flex items-center justify-center font-black text-white text-sm
+                       ${isActive ? 'bg-primary' : 'bg-slate-300 dark:bg-slate-600 text-slate-700 dark:text-slate-200'}`}>
+                       {peer.name.charAt(0).toUpperCase()}
+                     </div>
+                     {unread && (
+                       <span className="absolute -top-0.5 -right-0.5 w-3 h-3 bg-emerald-500 border-2 border-white dark:border-slate-800 rounded-full" />
+                     )}
+                   </div>
 
-                  {/* Name + last message */}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between gap-2">
-                      <span className={`text-[13px] font-black truncate ${unread ? 'text-slate-800 dark:text-white' : 'text-slate-700 dark:text-slate-200'}`}>
-                        {peer.name}
-                      </span>
-                      <span className={`text-[10px] shrink-0 ${unread ? 'text-primary font-black' : 'text-slate-400'}`}>
-                        {formatTime(conv.lastMessage.timestamp)}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-1.5 mt-0.5">
-                      {conv.lastMessage.fromId === user?.id && (
-                        <CheckCheck size={11} className="text-primary shrink-0" />
-                      )}
-                      <p className={`text-[11px] truncate ${unread ? 'font-bold text-slate-800 dark:text-slate-100' : 'text-slate-400'}`}>
-                        {conv.lastMessage.fromId === user?.id ? 'Você: ' : ''}
-                        {conv.lastMessage.content}
-                      </p>
-                    </div>
-                  </div>
+                   {/* Name + last message */}
+                   <div className="flex-1 min-w-0">
+                     <div className="flex items-center justify-between gap-2">
+                       <span className={`text-[13px] font-black truncate ${unread ? 'text-slate-800 dark:text-white' : 'text-slate-700 dark:text-slate-200'}`}>
+                         {peer.name}
+                       </span>
+                       <span className={`text-[10px] shrink-0 ${unread ? 'text-primary font-black' : 'text-slate-400'}`}>
+                         {formatTime(conv.lastMessage.timestamp)}
+                       </span>
+                     </div>
+                     <div className="flex items-center gap-1.5 mt-0.5">
+                       {conv.lastMessage.fromId === user?.id && (
+                         <CheckCheck size={11} className="text-primary shrink-0" />
+                       )}
+                       <p className={`text-[11px] truncate ${unread ? 'font-bold text-slate-800 dark:text-slate-100' : 'text-slate-400'}`}>
+                         {conv.lastMessage.fromId === user?.id ? 'Você: ' : ''}
+                         {conv.lastMessage.content}
+                       </p>
+                     </div>
+                   </div>
 
-                  {conv.unreadCount > 0 && (
-                    <span className="shrink-0 min-w-[20px] h-5 px-1.5 bg-primary text-white text-[10px] font-black rounded-full flex items-center justify-center">
-                      {conv.unreadCount}
-                    </span>
-                  )}
-                </button>
-              );
-            })
-          )}
-        </div>
-      </div>
+                   {conv.unreadCount > 0 && (
+                     <span className="shrink-0 min-w-[20px] h-5 px-1.5 bg-primary text-white text-[10px] font-black rounded-full flex items-center justify-center">
+                       {conv.unreadCount}
+                     </span>
+                   )}
+                 </button>
+               );
+             })
+           )}
+         </div>
+       </div>
 
       {/* ══════════════════════════════════════════════
           RIGHT PANEL — Chat

@@ -191,58 +191,64 @@ const LandingPage: React.FC = () => {
         )}
       </nav>
 
-      {/* Hero Section */}
-        <header
-          className="relative pt-12 sm:pt-16 pb-20 sm:pb-28 overflow-hidden"
-          ref={heroRef}
-        >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-          <div className="z-10 text-center lg:text-left">
-            <div className="inline-flex items-center gap-2 px-5 py-2.5 bg-slate-100 dark:bg-slate-800 text-primary dark:text-white rounded-full text-xs font-black mb-8 uppercase tracking-widest hero-badge shadow-sm z-10 relative">
-              <Zap size={14} className="text-secondary" /> Plataforma Digital Oficial
-            </div>
-            <h1 className="text-4xl sm:text-5xl lg:text-7xl font-black text-slate-900 dark:text-white leading-[1.1] mb-6 sm:mb-8 hero-title">
-              Gestão Escolar <br />
-              <span className="text-primary dark:text-secondary italic">Inteligente</span>
-            </h1>
-            <p className="text-center lg:text-left text-xl sm:text-2xl lg:text-3xl text-slate-600 dark:text-slate-400 mb-8 sm:mb-12 leading-relaxed max-w-2xl mx-auto lg:mx-0 hero-desc">
-              Bem-vindo à plataforma digital oficial do IMEL. Aceda às suas informações académicas, recursos didáticos e serviços administrativos num único lugar.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start hero-btn">
-              <Link
-                to="/login"
-                className="flex items-center justify-center gap-3 px-8 sm:px-10 py-4 sm:py-5 bg-primary text-white rounded-2xl text-base sm:text-lg font-black shadow-2xl hover:translate-y-[-2px] transition-all group"
-              >
-                {t('start_now')}{' '}
-                <ArrowRight className="group-hover:translate-x-1 transition-transform" />
-              </Link>
-              <a
-                href="#features"
-                onClick={(e) => scrollToSection(e, 'features')}
-                className="px-8 sm:px-10 py-4 sm:py-5 bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-2xl text-base sm:text-lg font-black hover:bg-slate-50 transition-all text-center"
-              >
-                Saber Mais
-              </a>
-            </div>
-          </div>
-          <div className="relative hidden lg:block animate-fade hero-img-wrapper">
-            <div className="relative rounded-[3rem] overflow-hidden border-[12px] border-white dark:border-slate-800 shadow-2xl rotate-2 hover:rotate-0 transition-all duration-1000">
-              <img
-                src="https://tecpleta.com/midias/noticias/584979.jpg"
-                alt={settings.schoolName}
-                className="w-full h-[460px] xl:h-[600px] object-cover"
-                onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
-                  e.currentTarget.style.display = 'none';
-                  e.currentTarget.nextElementSibling?.setAttribute('style', 'display:flex');
-                }}
-              />
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-600/10 to-blue-800/10 items-center justify-center">
-                <GraduationCap className="w-32 h-32 text-white/20" />
+       {/* Hero Section */}
+         <header
+           className="relative pt-12 sm:pt-16 pb-20 sm:pb-28 overflow-hidden"
+           ref={heroRef}
+         >
+         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+           <div className="z-10 text-center lg:text-left">
+             <div className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-primary to-secondary dark:from-primary/20 dark:to-secondary/20 text-white dark:text-white rounded-full text-xs font-black mb-8 uppercase tracking-widest hero-badge shadow-sm z-10 relative">
+               <Zap size={14} className="text-secondary" /> Plataforma Digital Oficial
+             </div>
+<h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 dark:text-white leading-tight mb-4 hero-title">
+                Gestão Escolar <span className="text-primary dark:text-secondary italic">Inteligente</span>
+              </h1>
+              <p className="text-slate-600 dark:text-slate-400 mb-6 leading-relaxed max-w-xl mx-auto lg:mx-0 text-base sm:text-lg hero-desc">
+                Bem-vindo à plataforma digital oficial do IMEL. Aceda às suas informações académicas, recursos didáticos e serviços administrativos num único lugar.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start hero-btn">
+<Link
+                  to="/login"
+                  className="flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-primary to-secondary text-white rounded-xl text-sm font-black shadow-lg hover:scale-105 transition-all group"
+                >
+                  {t('start_now')}
+                  <ArrowRight className="group-hover:translate-x-1 transition-transform" size={18} />
+                </Link>
+                <a
+                  href="#features"
+                  onClick={(e) => scrollToSection(e, 'features')}
+                  className="px-6 py-3 bg-white dark:bg-slate-800/80 border-2 border-slate-200 dark:border-slate-700/80 text-slate-900 dark:text-white rounded-xl text-sm font-black hover:bg-slate-50 transition-all text-center shadow-sm"
+                >
+                  Saber Mais
+                </a>
+             </div>
+           </div>
+<div className="relative hidden lg:block animate-fade hero-img-wrapper">
+              <div className="relative rounded-[2.5rem] overflow-hidden border-[10px] border-white dark:border-slate-800 shadow-2xl rotate-1 hover:rotate-0 transition-all duration-700 group">
+                <img
+                  src="https://tecpleta.com/midias/noticias/584979.jpg"
+                  alt={settings.schoolName}
+                  className="w-full h-[380px] xl:h-[480px] object-cover object-center transition-transform duration-700 group-hover:scale-105"
+                  onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
+                    e.currentTarget.style.display = 'none';
+                    e.currentTarget.nextElementSibling?.setAttribute('style', 'display:flex');
+                  }}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none" />
+                <div className="absolute bottom-6 left-6 right-6 text-white">
+                  <p className="text-sm font-bold bg-black/30 backdrop-blur px-4 py-2 rounded-full inline-block">
+                    Aprendizagem Moderna & Inovadora
+                  </p>
+                </div>
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-600/5 to-blue-800/5 items-center justify-center pointer-events-none">
+                  <GraduationCap className="w-24 h-24 text-white/10" />
+                </div>
+                <div className="absolute inset-0 -z-10 blur-2xl bg-gradient-to-br from-primary/15 to-secondary/15 dark:from-primary/10 dark:to-secondary/10" />
               </div>
             </div>
-          </div>
-        </div>
-      </header>
+         </div>
+       </header>
 
       {/* Funcionalidades */}
       <section
@@ -270,11 +276,7 @@ const LandingPage: React.FC = () => {
               },
               { icon: MessageSquare, title: 'Comunicação', desc: 'Mensagens internas e avisos' },
               { icon: Users, title: 'Assiduidade', desc: 'Acompanhe suas presenças' },
-              {
-                icon: Database,
-                title: 'Documentos',
-                desc: 'Acesso a guias e certificados para estarem mais em baixo da iamgen',
-              },
+{ icon: Database, title: 'Documentos', desc: 'Acesso a guias e certificados' },
             ].map((feature, i) => (
               <div
                 key={i}

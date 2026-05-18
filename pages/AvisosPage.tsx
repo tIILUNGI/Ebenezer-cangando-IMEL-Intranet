@@ -159,15 +159,20 @@ const AvisosPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Professor scope warning */}
-      {isProfessor && (
-        <div className="p-4 bg-blue-50 dark:bg-blue-900/15 border border-blue-200 dark:border-blue-800 rounded-2xl flex items-center gap-3 text-blue-700 dark:text-blue-400">
-          <UserIcon size={20} />
-          <span className="text-sm font-bold">
-            Avisos enviados por si são distribuídos <strong>apenas para os alunos das suas turmas</strong>.
-          </span>
-        </div>
-      )}
+       {/* Professor scope warning */}
+       {isProfessor && (
+         <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-500 dark:border-blue-400 rounded-lg flex items-center gap-3 text-blue-800 dark:text-blue-300 shadow-sm">
+           <UserIcon size={22} className="flex-shrink-0" />
+           <div>
+             <span className="text-sm font-medium">
+               Avisos enviados por si são distribuídos 
+             </span>
+             <span className="text-sm font-semibold text-blue-600 dark:text-blue-400">
+               apenas para os alunos das suas turmas
+             </span>
+           </div>
+         </div>
+       )}
 
       {isModalOpen && canCreate && (
         <div className="bg-white dark:bg-slate-800 p-8 rounded-[2rem] border border-slate-100 dark:border-slate-700 shadow-md animate-fade mb-8 max-w-2xl">

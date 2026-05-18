@@ -417,74 +417,74 @@ const LibraryPage: React.FC = () => {
           </div>
         )}
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" ref={gridRef}>
-          {filteredLibrary.map((res) => (
-            <div
-              key={res.id}
-              className="bg-white dark:bg-slate-800 rounded-[2rem] overflow-hidden shadow-sm border border-slate-100 dark:border-slate-700 group hover:border-primary transition-all max-w-full"
-            >
-              <div className="h-40 bg-slate-50 dark:bg-slate-900/50 flex flex-col items-center justify-center text-slate-300 group-hover:bg-primary/5 transition-colors relative">
-                {res.type === 'VIDEO' ? (
-                  <PlayCircle size={40} className="group-hover:text-primary transition-colors" />
-                ) : res.type === 'ZIP' ? (
-                  <FileArchive size={40} className="group-hover:text-primary transition-colors" />
-                ) : res.type === 'DOC' ? (
-                  <FileText size={40} className="group-hover:text-primary transition-colors" />
-                ) : (
-                  <FileText size={40} className="group-hover:text-primary transition-colors" />
-                )}
-                <span className="absolute top-3 left-3 text-[8px] font-black bg-primary text-white px-2 py-0.5 rounded uppercase">
-                  {res.type}
-                </span>
-                <span className="absolute bottom-3 right-3 text-[8px] font-bold bg-white/90 dark:bg-slate-700/90 px-2 py-0.5 rounded text-slate-500">
-                  {res.size}
-                </span>
-              </div>
-              <div className="p-5">
-                <div className="flex justify-between items-start mb-2">
-                  <span className="text-[9px] font-bold uppercase tracking-widest text-primary dark:text-secondary">
-                    {res.subject}
-                  </span>
-                  <span className="text-[8px] text-slate-400">{res.date}</span>
-                </div>
-                <h3 className="font-bold text-slate-800 dark:text-white mb-1 text-sm leading-tight line-clamp-2">
-                  {res.title}
-                </h3>
-                <p className="text-[9px] font-bold text-slate-400 uppercase tracking-tighter mb-3">
-                  Autor: {res.author}
-                </p>
-                <div className="flex items-center justify-between gap-2">
-                  <span className="text-[9px] font-bold text-slate-300 uppercase">
-                    ⬇ {res.downloads || 0}
-                  </span>
-                  <div className="flex gap-1">
-                    <button
-                      onClick={() => handleDownload(res.id)}
-                      className="flex-1 py-2 bg-slate-50 dark:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-lg font-bold text-[9px] uppercase tracking-wider group-hover:bg-primary group-hover:text-white transition-all flex items-center justify-center gap-1"
-                    >
-                      <Download size={12} /> Baixar
-                    </button>
-                    {isProfessor && (
-                      <button
-                        onClick={() => handleDelete(res.id)}
-                        className="p-2 text-slate-400 hover:text-red-500 transition-colors"
-                        title="Remover"
-                      >
-                        <X size={14} />
-                      </button>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))}
-          {filteredLibrary.length === 0 && (
-            <div className="col-span-full text-center py-16">
-              <BookOpen size={48} className="mx-auto text-slate-300 mb-4" />
-              <p className="text-slate-400 font-bold">Nenhum recurso encontrado na biblioteca.</p>
-            </div>
-          )}
-        </div>
+         <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" ref={gridRef}>
+           {filteredLibrary.map((res) => (
+             <div
+               key={res.id}
+               className="bg-white dark:bg-slate-800 rounded-[2rem] overflow-hidden shadow border border-slate-100 dark:border-slate-700 group hover:shadow-xl transition-all duration-300"
+             >
+               <div className="h-40 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-slate-900/80 dark:to-slate-900/60 flex flex-col items-center justify-center text-slate-300 group-hover:from-primary/10 group-hover:to-primary/5 transition-colors relative">
+                 {res.type === 'VIDEO' ? (
+                   <PlayCircle size={40} className="text-primary/80 group-hover:text-primary transition-colors" />
+                 ) : res.type === 'ZIP' ? (
+                   <FileArchive size={40} className="text-primary/80 group-hover:text-primary transition-colors" />
+                 ) : res.type === 'DOC' ? (
+                   <FileText size={40} className="text-primary/80 group-hover:text-primary transition-colors" />
+                 ) : (
+                   <FileText size={40} className="text-primary/80 group-hover:text-primary transition-colors" />
+                 )}
+                 <span className="absolute top-3 left-3 text-[8px] font-semibold bg-primary text-white px-2 py-0.5 rounded uppercase">
+                   {res.type}
+                 </span>
+                 <span className="absolute bottom-3 right-3 text-[8px] font-semibold bg-white/90 dark:bg-slate-700/90 px-2 py-0.5 rounded text-slate-500">
+                   {res.size}
+                 </span>
+               </div>
+               <div className="p-6">
+                 <div className="flex justify-between items-start mb-3">
+                   <span className="text-[9px] font-semibold uppercase tracking-widest text-primary dark:text-secondary">
+                     {res.subject}
+                   </span>
+                   <span className="text-[8px] text-slate-400">{res.date}</span>
+                 </div>
+                 <h3 className="font-bold text-slate-800 dark:text-white mb-2 text-base leading-tight line-clamp-2 hover:text-primary transition-colors">
+                   {res.title}
+                 </h3>
+                 <p className="text-[9px] font-semibold text-slate-400 uppercase tracking-tighter mb-4">
+                   Autor: {res.author}
+                 </p>
+                 <div className="flex items-center justify-between gap-2">
+                   <span className="text-[9px] font-semibold text-slate-300 uppercase">
+                     ⬇ {res.downloads || 0}
+                   </span>
+                   <div className="flex gap-1">
+                     <button
+                       onClick={() => handleDownload(res.id)}
+                       className="flex-1 py-2.5 bg-slate-50 dark:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-lg font-medium text-[9px] uppercase tracking-wider group-hover:bg-primary group-hover:text-white transition-all flex items-center justify-center gap-1"
+                     >
+                       <Download size={12} /> Baixar
+                     </button>
+                     {isProfessor && (
+                       <button
+                         onClick={() => handleDelete(res.id)}
+                         className="p-2 text-slate-400 hover:text-red-500 transition-colors"
+                         title="Remover"
+                       >
+                         <X size={14} />
+                       </button>
+                     )}
+                   </div>
+                 </div>
+               </div>
+             </div>
+           ))}
+           {filteredLibrary.length === 0 && (
+             <div className="col-span-full text-center py-16">
+               <BookOpen size={48} className="mx-auto text-slate-300 mb-4" />
+               <p className="text-slate-400 font-bold">Nenhum recurso encontrado na biblioteca.</p>
+             </div>
+           )}
+         </div>
       </div>
     </>
   );
