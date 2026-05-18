@@ -29,18 +29,21 @@ export const handler = async (event) => {
       host: smtpHost,
       port: Number(smtpPort || 587),
       secure: Number(smtpPort) === 465,
-      auth: { user: smtpUser, pass: smtpPass }
+      auth: { user: smtpUser, pass: smtpPass },
     });
 
     await transporter.sendMail({
       from: smtpFrom,
       to: email,
       subject: 'Bem-vindo ao Intra IMEL',
-      text: messageBody
+      text: messageBody,
     });
 
     return { statusCode: 200, body: JSON.stringify({ ok: true, channel: 'smtp' }) };
   } catch (error) {
-    return { statusCode: 500, body: JSON.stringify({ message: 'Falha ao enviar mensagem.', details: String(error) }) };
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ message: 'Falha ao enviar mensagem.', details: String(error) }),
+    };
   }
 };

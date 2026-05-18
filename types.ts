@@ -1,10 +1,9 @@
-
 export enum UserRole {
   ALUNO = 'Aluno',
   PROFESSOR = 'Professor',
   ADMIN = 'Administrador',
   DIRETOR = 'Diretor',
-  ENCARREGADO = 'Encarregado'
+  ENCARREGADO = 'Encarregado',
 }
 
 export interface User {
@@ -15,6 +14,7 @@ export interface User {
   password?: string;
   email?: string;
   phone?: string;
+  bi?: string;
   avatar?: string;
   turma?: string;
   isActive?: boolean;
@@ -38,7 +38,7 @@ export interface QuarterGrades {
 export interface Grade {
   id: string;
   studentId: string;
-  studentName: string; 
+  studentName: string;
   subject: string;
   t1: QuarterGrades;
   t2: QuarterGrades;
@@ -72,6 +72,7 @@ export interface LibraryResource {
   fileName?: string;
   mimeType?: string;
   dataUrl?: string;
+  fileUrl?: string;
   downloads?: number;
   turmaTarget?: string;
 }

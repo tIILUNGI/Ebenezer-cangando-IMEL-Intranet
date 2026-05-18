@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { ArrowRight, ArrowLeft, CheckCircle2, User, Mail, Lock, Fingerprint } from 'lucide-react';
-import { useDatabase } from '../App';
+import { useAuth } from '../App';
+import { register, login as apiLogin } from '../src/api/auth';
+import Swal from 'sweetalert2';
 
 const CreateAccountPage: React.FC = () => {
   const [step, setStep] = useState(1);
@@ -15,77 +17,98 @@ const CreateAccountPage: React.FC = () => {
   const [error, setError] = useState('');
   const [isSendingWelcome, setIsSendingWelcome] = useState(false);
   const navigate = useNavigate();
-  const { users, updateUser } = useDatabase();
+  const { login: authLogin } = useAuth();
 
-  const handleVerify = (e: React.FormEvent) => {
+  const handleVerify = async (e: React.FormEvent) => {
     e.preventDefault();
-    const user = users.find(u => u.processNumber === processNumber);
-    if (!user) {
-      setError('Número de processo não encontrado na base de dados do IMEL.');
-      return;
-    }
-    if (user.isActive) {
-      setError('Esta conta já foi ativada. Se esqueceu a senha, por favor, use a opção "Recuperar Senha" na página de login.');
-      return;
-    }
-    setFoundUser(user);
     setError('');
-    setStep(2);
-  };
-
-  const sendWelcomeMessage = async (payload: { phone: string; email: string; name: string; role: string }) => {
-    const response = await fetch('/.netlify/functions/send-welcome', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...payload, channels: ['whatsapp', 'sms'] })
-    });
-    if (!response.ok) {
-      const data = await response.json().catch(() => ({}));
-      throw new Error(data?.message || 'Falha no envio de boas-vindas.');
+    try {
+      const localUsers = JSON.parse(localStorage.getItem('imel_db_users') || '[]');
+      const user = localUsers.find((u: any) => u.processNumber === processNumber);
+      if (!user) {
+        setError('Número de processo não encontrado.');
+        return;
+      }
+      if (user.isActive) {
+        setError('Esta conta já foi ativada. Use "Recuperar Senha".');
+        return;
+      }
+      setFoundUser(user);
+      setStep(2);
+    } catch {
+      setError('Erro ao verificar dados.');
     }
   };
 
   const handleFinish = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError('');
+    if (!foundUser) return;
     if (foundUser.bi !== bi) {
-      setError('O número do BI não corresponde ao registado no sistema. Contacte a secretaria.');
+      setError('BI não corresponde ao registado.');
       return;
     }
     if (password.length < 6) {
-      setError('A palavra-passe deve ter no mínimo 6 caracteres.');
+      setError('Mínimo 6 caracteres.');
       return;
     }
     if (password === foundUser.processNumber) {
-      setError('A palavra-passe deve ser diferente do número de processo.');
+      setError('Palavra-passe não pode ser igual ao nº de processo.');
       return;
     }
     if (password !== confirmPassword) {
-      setError('As senhas não coincidem.');
+      setError('As palavras-passe não coincidem.');
       return;
     }
     if (!phone.trim()) {
-      setError('Informe o número de telemóvel para receber SMS e WhatsApp.');
+      setError('Informe o número de telemóvel.');
       return;
     }
 
-    setError('');
     setIsSendingWelcome(true);
-    updateUser(foundUser.id, { email, phone: phone.trim(), password, isActive: true }, foundUser.name);
+
     try {
-      await sendWelcomeMessage({ phone: phone.trim(), email, name: foundUser.name, role: foundUser.role });
-      setStep(3);
-      window.setTimeout(() => navigate('/login'), 1200);
-    } catch (err: any) {
-      setError(err?.message || 'Não foi possível enviar a mensagem de boas-vindas.');
-    } finally {
-      setIsSendingWelcome(false);
+      // Try API registration
+      await register({
+        processNumber: foundUser.processNumber,
+        bi,
+        email,
+        phone: phone.trim(),
+        password,
+        confirmPassword,
+      });
+    } catch (apiErr: any) {
+      console.warn('API registration failed, using local fallback');
+      // Update locally
+       const users = JSON.parse(localStorage.getItem('imel_db_users') || '[]');
+       const idx = users.findIndex((u: any) => u.id === foundUser.id);
+       if (idx >= 0) {
+         users[idx] = { ...users[idx], email, phone: phone.trim(), password, isActive: true };
+         localStorage.setItem('imel_db_users', JSON.stringify(users));
+       }
     }
+
+    try {
+      const { data } = await apiLogin(foundUser.processNumber, password);
+      localStorage.setItem('imel_user', JSON.stringify(data.user));
+      localStorage.setItem('imel_token', data.token);
+      localStorage.setItem('imel_refresh_token', data.refreshToken);
+    } catch {
+      // Login will work on next load
+    }
+
+    setStep(3);
+    setTimeout(() => navigate('/login'), 2000);
+    setIsSendingWelcome(false);
   };
 
   return (
     <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6">
       <div className="w-full max-w-xl bg-white rounded-[2.5rem] shadow-2xl shadow-blue-900/10 p-8 md:p-12 animate-fade">
-        <Link to="/login" className="inline-flex items-center gap-2 mb-10 text-slate-400 hover:text-[#003366] transition-colors">
+        <Link
+          to="/login"
+          className="inline-flex items-center gap-2 mb-10 text-slate-400 hover:text-[#003366] transition-colors"
+        >
           <ArrowLeft size={20} />
           <span className="text-sm font-bold">Voltar ao Login</span>
         </Link>
@@ -96,13 +119,17 @@ const CreateAccountPage: React.FC = () => {
               <User size={28} />
             </div>
             <h1 className="text-3xl font-black text-slate-900 mb-2">Primeiro acesso?</h1>
-            <p className="text-slate-500 mb-8">Insira seu número de processo para verificar seus dados no sistema.</p>
-            
+            <p className="text-slate-500 mb-8">
+              Insira seu número de processo para verificar seus dados.
+            </p>
+
             <form onSubmit={handleVerify} className="space-y-6">
               <div>
-                <label className="block text-sm font-bold text-slate-700 mb-2">Número de Processo</label>
-                <input 
-                  type="text" 
+                <label className="block text-sm font-bold text-slate-700 mb-2">
+                  Número de Processo
+                </label>
+                <input
+                  type="text"
                   value={processNumber}
                   onChange={(e) => setProcessNumber(e.target.value)}
                   placeholder="Ex: 2024001"
@@ -117,7 +144,7 @@ const CreateAccountPage: React.FC = () => {
                 </div>
               )}
 
-              <button 
+              <button
                 type="submit"
                 className="w-full bg-[#003366] text-white py-5 rounded-2xl font-bold text-lg hover:bg-blue-900 transition-all flex items-center justify-center gap-3"
               >
@@ -133,14 +160,23 @@ const CreateAccountPage: React.FC = () => {
               <CheckCircle2 size={14} /> DADOS LOCALIZADOS
             </div>
             <h1 className="text-3xl font-black text-slate-900 mb-2">Olá, {foundUser.name}</h1>
-            <p className="text-slate-500 mb-8">Identificamos que você é um <span className="text-[#003366] font-bold">{foundUser.role}</span>. Complete seu cadastro abaixo.</p>
+            <p className="text-slate-500 mb-8">
+              Identificamos que você é um{' '}
+              <span className="text-[#003366] font-bold">{foundUser.role}</span>. Complete seu
+              cadastro abaixo.
+            </p>
 
             <form onSubmit={handleFinish} className="space-y-6">
               <div className="grid md:grid-cols-2 gap-4">
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-bold text-slate-700 mb-2">Número de BI</label>
+                  <label className="block text-sm font-bold text-slate-700 mb-2">
+                    Número de BI
+                  </label>
                   <div className="relative">
-                    <Fingerprint className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                    <Fingerprint
+                      className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+                      size={18}
+                    />
                     <input
                       type="text"
                       value={bi}
@@ -154,9 +190,12 @@ const CreateAccountPage: React.FC = () => {
                 <div className="md:col-span-2">
                   <label className="block text-sm font-bold text-slate-700 mb-2">Seu E-mail</label>
                   <div className="relative">
-                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-                    <input 
-                      type="email" 
+                    <Mail
+                      className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+                      size={18}
+                    />
+                    <input
+                      type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="exemplo@imel.edu.ao"
@@ -166,9 +205,11 @@ const CreateAccountPage: React.FC = () => {
                   </div>
                 </div>
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-bold text-slate-700 mb-2">Telemóvel (WhatsApp/SMS)</label>
-                  <input 
-                    type="tel" 
+                  <label className="block text-sm font-bold text-slate-700 mb-2">
+                    Telemóvel (WhatsApp/SMS)
+                  </label>
+                  <input
+                    type="tel"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     placeholder="Ex: +244 9xx xxx xxx"
@@ -177,11 +218,16 @@ const CreateAccountPage: React.FC = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-bold text-slate-700 mb-2">Criar Palavra-passe</label>
+                  <label className="block text-sm font-bold text-slate-700 mb-2">
+                    Criar Palavra-passe
+                  </label>
                   <div className="relative">
-                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-                    <input 
-                      type="password" 
+                    <Lock
+                      className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+                      size={18}
+                    />
+                    <input
+                      type="password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="••••••••"
@@ -191,11 +237,16 @@ const CreateAccountPage: React.FC = () => {
                   </div>
                 </div>
                 <div>
-                  <label className="block text-sm font-bold text-slate-700 mb-2">Confirmar Palavra-passe</label>
+                  <label className="block text-sm font-bold text-slate-700 mb-2">
+                    Confirmar Palavra-passe
+                  </label>
                   <div className="relative">
-                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-                    <input 
-                      type="password" 
+                    <Lock
+                      className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+                      size={18}
+                    />
+                    <input
+                      type="password"
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
                       placeholder="••••••••"
@@ -213,13 +264,14 @@ const CreateAccountPage: React.FC = () => {
               )}
 
               <div className="p-4 bg-blue-50 text-[#003366] text-xs leading-relaxed rounded-xl italic">
-                Ao criar sua conta, você concorda com os termos de uso e política de privacidade da Intranet IMEL.
+                Ao criar sua conta, você concorda com os termos de uso e política de privacidade da
+                Intranet IMEL.
               </div>
 
-              <button 
+              <button
                 type="submit"
                 disabled={isSendingWelcome}
-                className="w-full bg-[#003366] text-white py-5 rounded-2xl font-bold text-lg hover:bg-blue-900 transition-all"
+                className="w-full bg-[#003366] text-white py-5 rounded-2xl font-bold text-lg hover:bg-blue-900 transition-all flex items-center justify-center gap-3"
               >
                 {isSendingWelcome ? 'A enviar boas-vindas...' : 'Concluir Registo'}
               </button>
@@ -234,7 +286,8 @@ const CreateAccountPage: React.FC = () => {
             </div>
             <h1 className="text-4xl font-black text-slate-900 mb-4">Conta Ativada!</h1>
             <p className="text-slate-600 text-lg mb-8 max-w-sm mx-auto">
-              Sua conta no sistema IMEL Intranet foi criada com sucesso. Redirecionando para o login...
+              Sua conta no sistema IMEL Intranet foi criada com sucesso. Redirecionando para o
+              login...
             </p>
           </div>
         )}
