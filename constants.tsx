@@ -589,11 +589,21 @@ export const DEMO_LIBRARY: any[] = [
 // Demo announcements
 export const DEMO_ANNOUNCEMENTS: any[] = [
   {
+    id: 'aviso-pap-1',
+    title: 'Calendário Oficial das Defesas da PAP',
+    message: 'Atenção a todos! O calendário oficial das defesas da Prova de Aptidão Profissional (PAP) já foi publicado. As defesas terão início no dia 15 de Junho. Verifiquem o vosso horário junto à coordenação do curso e garantam que todos os projetos estejam finalizados.',
+    authorName: 'Admin do Sistema',
+    timestamp: new Date().toISOString(),
+    read: false,
+    targetAudience: 'Todos',
+    type: 'announcement',
+  },
+  {
     id: 'aviso-1',
     title: 'Reunião Geral de Pais e Encarregados',
     message: 'Será realizada reunião nos dias 25 e 26 de maio. Todos os encarregados estão convidados a participar.',
     authorName: 'Direção',
-    timestamp: new Date().toISOString(),
+    timestamp: new Date(Date.now() - 43200000).toISOString(),
     read: false,
     targetAudience: 'Aluno',
     type: 'announcement',

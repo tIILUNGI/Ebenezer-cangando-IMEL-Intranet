@@ -92,12 +92,17 @@ const LibraryPage: React.FC = () => {
 
     const content =
       resource.dataUrl ||
-      `data:text/plain;charset=utf-8,${encodeURIComponent(`Arquivo gerado localmente: ${resource.title}`)}`;
+      `data:application/pdf;charset=utf-8,${encodeURIComponent(`Documento: ${resource.title}`)}`;
     const fileName =
-      resource.fileName || `${resource.title}.${(resource.type || 'PDF').toLowerCase()}`;
+      resource.fileName || `${resource.title}.${(resource.type || 'pdf').toLowerCase()}`;
+    
+    // Force PDF download for non-Excel files
+    const mimeType = resource.mimeType || 'application/pdf';
+    const downloadUrl = content.startsWith('data:') ? content : `data:${mimeType};charset=utf-8,${encodeURIComponent(content)}`;
+    
     const link = document.createElement('a');
-    link.href = content;
-    link.download = fileName;
+    link.href = downloadUrl;
+    link.download = fileName.endsWith('.pdf') || fileName.endsWith('.xlsx') ? fileName : `${fileName}.pdf`;
     document.body.appendChild(link);
     link.click();
     link.remove();

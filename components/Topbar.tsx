@@ -9,6 +9,8 @@ import {
   MessageSquare,
   AlertCircle,
   FileText,
+  User,
+  LogOut
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth, useSettings, useDatabase } from '../App';
@@ -18,11 +20,12 @@ interface TopbarProps {
 }
 
 const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const { theme, lang, toggleTheme, toggleLang, t } = useSettings();
   const { notifications, markNotificationRead, clearNotifications } = useDatabase();
   const navigate = useNavigate();
   const [showNotifs, setShowNotifs] = useState(false);
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [searchValue, setSearchValue] = useState('');
 
   const unreadCount = notifications.filter((n) => !n.read).length;
@@ -169,18 +172,58 @@ const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
           )}
         </div>
 
-        <div className="flex items-center gap-2 md:gap-4 pl-2 md:pl-6 border-l border-slate-200 dark:border-slate-700">
-          <div className="text-right hidden sm:block max-w-[100px] md:max-w-none">
-            <p className="text-[11px] md:text-sm font-black text-slate-800 dark:text-slate-100 truncate">
-              {user?.name}
-            </p>
-            <p className="text-[9px] md:text-xs text-slate-500 dark:text-slate-400 font-bold uppercase">
-              {user?.role}
-            </p>
-          </div>
-          <div className="w-8 h-8 md:w-10 md:h-10 bg-primary text-white rounded-xl flex items-center justify-center font-bold ring-2 ring-blue-50 dark:ring-slate-700 text-xs md:text-sm shrink-0">
-            {user?.name?.charAt(0)}
-          </div>
+        <div className="relative ml-2 md:ml-4 pl-2 md:pl-6 border-l border-slate-200 dark:border-slate-700">
+          <button
+            onClick={() => setShowProfileMenu(!showProfileMenu)}
+            className="flex items-center gap-2 md:gap-4 outline-none hover:opacity-80 transition-opacity"
+          >
+            <div className="text-right hidden sm:block max-w-[100px] md:max-w-none">
+              <p className="text-[11px] md:text-sm font-black text-slate-800 dark:text-slate-100 truncate">
+                {user?.name}
+              </p>
+              <p className="text-[9px] md:text-xs text-slate-500 dark:text-slate-400 font-bold uppercase">
+                {user?.role}
+              </p>
+            </div>
+            <div className="w-8 h-8 md:w-10 md:h-10 bg-primary text-white rounded-xl flex items-center justify-center font-bold ring-2 ring-blue-50 dark:ring-slate-700 text-xs md:text-sm shrink-0 shadow-sm">
+              {user?.name?.charAt(0)}
+            </div>
+          </button>
+
+          {showProfileMenu && (
+            <>
+              <div 
+                className="fixed inset-0 z-40" 
+                onClick={() => setShowProfileMenu(false)}
+              ></div>
+              <div className="absolute right-0 mt-4 w-52 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-3xl shadow-2xl overflow-hidden animate-fade z-50">
+                <div className="p-2 flex flex-col gap-1">
+                  <button 
+                    onClick={() => { setShowProfileMenu(false); navigate('/perfil'); }} 
+                    className="flex items-center gap-3 px-4 py-3 text-sm font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700/50 rounded-2xl transition-colors w-full text-left"
+                  >
+                    <User size={18} className="text-slate-400" />
+                    Meu Perfil
+                  </button>
+                  <button 
+                    onClick={() => { setShowProfileMenu(false); toggleTheme(); }} 
+                    className="flex items-center gap-3 px-4 py-3 text-sm font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700/50 rounded-2xl transition-colors w-full text-left"
+                  >
+                    {theme === 'light' ? <Moon size={18} className="text-slate-400" /> : <Sun size={18} className="text-slate-400" />}
+                    {theme === 'light' ? 'Modo Escuro' : 'Modo Claro'}
+                  </button>
+                  <div className="h-px bg-slate-100 dark:bg-slate-700 my-1"></div>
+                  <button 
+                    onClick={() => { setShowProfileMenu(false); logout(); }} 
+                    className="flex items-center gap-3 px-4 py-3 text-sm font-bold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-2xl transition-colors w-full text-left"
+                  >
+                    <LogOut size={18} />
+                    Terminar Sessão
+                  </button>
+                </div>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </header>

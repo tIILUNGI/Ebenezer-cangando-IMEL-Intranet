@@ -65,7 +65,7 @@ const GradesPage: React.FC = () => {
 
   const handlePrint = () => window.print();
 
-  const handleDownloadPDF = () => {
+  const handleDownloadPDF = async () => {
     const printCSS = `
       <style>
         @page { margin: 1.5cm 1.2cm; size: A4 portrait; }
@@ -151,15 +151,25 @@ const GradesPage: React.FC = () => {
   </div>
 </div>
 </body></html>`;
-    const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `Boletim_${activeStudent?.name?.replace(/\s+/g, '_') || 'IMEL'}.html`;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(url);
+    
+    // Open in new window for printing (user can save as PDF with Ctrl+P)
+    const printWindow = window.open('about:blank', '_blank', 'width=900,height=700');
+    if (printWindow) {
+      printWindow.document.write(html);
+      printWindow.document.close();
+      printWindow.focus();
+    } else {
+      // Fallback: download as HTML file
+      const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Boletim_${activeStudent?.name?.replace(/\s+/g, '_') || 'IMEL'}.html`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }
   };
 
   return (

@@ -236,16 +236,16 @@ const DatabaseProvider: React.FC<{ children: React.ReactNode }> = ({ children })
       ? await fetchFromAPI(fetchSchedule, MOCK_SCHEDULE, 'imel_db_schedules')
       : JSON.parse(localStorage.getItem('imel_db_schedules') || JSON.stringify(MOCK_SCHEDULE));
     const notificationsResult = serverReachable
-      ? await fetchFromAPI(fetchNotifications, JSON.parse(localStorage.getItem('imel_db_notifs') || '[]'), 'imel_db_notifs')
-      : JSON.parse(localStorage.getItem('imel_db_notifs') || '[]');
+      ? await fetchFromAPI(fetchNotifications, DEMO_ANNOUNCEMENTS, 'imel_db_notifs')
+      : JSON.parse(localStorage.getItem('imel_db_notifs') || JSON.stringify(DEMO_ANNOUNCEMENTS));
     const libraryResult = serverReachable
-      ? await fetchFromAPI(fetchLibrary, JSON.parse(localStorage.getItem('imel_db_library') || '[]'), 'imel_db_library')
-      : JSON.parse(localStorage.getItem('imel_db_library') || '[]');
+      ? await fetchFromAPI(fetchLibrary, DEMO_LIBRARY, 'imel_db_library')
+      : JSON.parse(localStorage.getItem('imel_db_library') || JSON.stringify(DEMO_LIBRARY));
     const messagesResult = serverReachable
-      ? await fetchFromAPI(fetchMessages, JSON.parse(localStorage.getItem('imel_db_messages') || '[]'), 'imel_db_messages')
+      ? await fetchFromAPI(fetchMessages, [], 'imel_db_messages')
       : JSON.parse(localStorage.getItem('imel_db_messages') || '[]');
     const auditLogsResult = serverReachable
-      ? await fetchFromAPI(fetchAuditLogs, JSON.parse(localStorage.getItem('imel_db_logs') || '[]'), 'imel_db_logs')
+      ? await fetchFromAPI(fetchAuditLogs, [], 'imel_db_logs')
       : JSON.parse(localStorage.getItem('imel_db_logs') || '[]');
 
     setUsers(usersResult);
@@ -277,20 +277,24 @@ const DatabaseProvider: React.FC<{ children: React.ReactNode }> = ({ children })
           setSchedules(MOCK_SCHEDULE);
         }
       } catch (err) {
-        console.warn('Error in seeding local data:', err);
+console.warn('Error in seeding local data:', err);
       }
-if (!localStorage.getItem('imel_db_library')) {
-         localStorage.setItem('imel_db_library', JSON.stringify(DEMO_LIBRARY));
-       }
-       if (!localStorage.getItem('imel_db_messages')) {
-         localStorage.setItem('imel_db_messages', JSON.stringify([]));
-       }
-       if (!localStorage.getItem('imel_db_logs')) {
-         localStorage.setItem('imel_db_logs', JSON.stringify([]));
-       }
-       if (!localStorage.getItem('imel_db_notifs')) {
-         localStorage.setItem('imel_db_notifs', JSON.stringify(DEMO_ANNOUNCEMENTS));
-       }
+      // Ensure DEMO_LIBRARY and DEMO_ANNOUNCEMENTS are always seeded
+      const storedLibrary = localStorage.getItem('imel_db_library');
+      if (!storedLibrary || JSON.parse(storedLibrary).length === 0) {
+        localStorage.setItem('imel_db_library', JSON.stringify(DEMO_LIBRARY));
+        setLibrary(DEMO_LIBRARY);
+      }
+      const storedNotifs = localStorage.getItem('imel_db_notifs');
+      if (!storedNotifs || JSON.parse(storedNotifs).length === 0) {
+        localStorage.setItem('imel_db_notifs', JSON.stringify(DEMO_ANNOUNCEMENTS));
+      }
+      if (!localStorage.getItem('imel_db_messages')) {
+        localStorage.setItem('imel_db_messages', JSON.stringify([]));
+      }
+      if (!localStorage.getItem('imel_db_logs')) {
+        localStorage.setItem('imel_db_logs', JSON.stringify([]));
+      }
     };
     seedLocalData();
 

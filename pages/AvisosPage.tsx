@@ -46,7 +46,10 @@ const AvisosPage: React.FC = () => {
     .filter(
       (n) =>
         n.type === 'announcement' &&
-        (n.targetAudience === 'Aluno' || n.targetAudience === user?.role || n.targetAudience === 'Todos')
+        (n.targetAudience === 'Todos' || 
+         n.targetAudience === 'Aluno' || 
+         n.targetAudience === user?.role ||
+         (user?.role === UserRole.ALUNO && n.targetAudience === 'Aluno'))
     )
     .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 

@@ -80,7 +80,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggle }) => {
         </div>
 
         {/* Nav Links */}
-        <nav className="flex-1 py-6 space-y-1 overflow-y-auto scrollbar-hide px-2">
+        <nav className="flex-1 py-6 space-y-1 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-400 scrollbar-track-transparent hover:scrollbar-thumb-slate-500 px-2">
           {filteredLinks.map((link, idx) => (
             <NavLink
               key={`${link.path}-${idx}`}
