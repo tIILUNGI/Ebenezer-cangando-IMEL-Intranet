@@ -43,7 +43,7 @@ const AIChatWidget: React.FC = () => {
       if (!geminiApiKey) throw new Error('Chave GEMINI_API_KEY em falta.');
       const ai = new GoogleGenAI({ apiKey: geminiApiKey });
       const response = await ai.models.generateContent({
-        model: 'gemini-3-flash-preview',
+        model: 'gemini-2.0-flash',
         contents: `Você é assistente do sistema escolar IMEL. Responda de forma curta e prática. Perfil: ${roleContext}. ${studentContext} Pergunta do utilizador: ${question}`,
       });
        setChatMessages((prev) => [
