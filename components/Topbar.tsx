@@ -22,7 +22,7 @@ interface TopbarProps {
 const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
   const { user, logout } = useAuth();
   const { theme, lang, toggleTheme, toggleLang, t } = useSettings();
-  const { notifications, markNotificationRead, clearNotifications } = useDatabase();
+  const { notifications, markNotificationRead, clearNotifications, removeNotification } = useDatabase();
   const navigate = useNavigate();
   const [showNotifs, setShowNotifs] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
@@ -138,7 +138,7 @@ const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
                   notifications.map((n) => (
                     <div
                       key={n.id}
-                      onClick={() => markNotificationRead(n.id)}
+                      onClick={() => removeNotification(n.id)}
                       className={`p-4 md:p-5 border-b border-slate-50 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/50 cursor-pointer transition-colors ${!n.read ? 'bg-blue-50/20 dark:bg-blue-900/10' : ''}`}
                     >
                       <div className="flex gap-3">

@@ -318,7 +318,9 @@ const activateAllUsers = async () => {
     return classGroups;
   };
 
-  const activeRoleUsers = filteredUsers.filter((u) => u.role === activeRole);
+   const activeRoleUsers = filteredUsers
+     .filter((u) => u.role === activeRole)
+     .sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }));
 
   const courseGroups: { [courseName: string]: User[] } = {};
   activeRoleUsers.forEach((u) => {
@@ -664,7 +666,7 @@ const activateAllUsers = async () => {
             <p className="text-slate-400 font-bold uppercase tracking-wider text-xs">Nenhum utilizador encontrado com este perfil</p>
           </div>
         ) : (
-          Object.keys(courseGroups).map((courseName) => {
+          Object.keys(courseGroups).sort((a, b) => a.localeCompare(b)).map((courseName) => {
             const courseUsers = courseGroups[courseName];
             const classSubGroups = getSubGroupsByClass(courseUsers);
             
@@ -690,7 +692,7 @@ const activateAllUsers = async () => {
 
                 {/* Class subgroups */}
                 <div className="space-y-8">
-                  {Object.keys(classSubGroups).map((className) => {
+                  {Object.keys(classSubGroups).sort((a, b) => a.localeCompare(b)).map((className) => {
                     const classUsers = classSubGroups[className];
                     
                     return (

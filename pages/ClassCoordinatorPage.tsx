@@ -19,7 +19,9 @@ const ClassCoordinatorPage: React.FC = () => {
   }
 
   const className = user.coordinatedEntity || '';
-  const students = users.filter((u) => u.role === UserRole.ALUNO && u.turma === className);
+  const students = users
+    .filter((u) => u.role === UserRole.ALUNO && u.turma === className)
+    .sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }));
 
   const getStudentAverage = (studentId: string) => {
     const studentGrades = grades.filter((g) => g.studentId === studentId);

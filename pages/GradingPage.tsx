@@ -54,15 +54,17 @@ const GradingPage: React.FC = () => {
     );
   }
 
-  const myGrades = useMemo(() => {
-    const filtered =
-      user?.role === UserRole.PROFESSOR
-        ? grades.filter((g) => g.teacherId === user?.id)
-        : grades;
-    return selectedSubject
-      ? filtered.filter((g) => g.subject === selectedSubject)
-      : filtered;
-  }, [grades, user, selectedSubject]);
+   const myGrades = useMemo(() => {
+     let filtered =
+       user?.role === UserRole.PROFESSOR
+         ? grades.filter((g) => g.teacherId === user?.id)
+         : grades;
+     if (selectedSubject) {
+       filtered = filtered.filter((g) => g.subject === selectedSubject);
+     }
+     // Sort by studentName
+     return [...filtered].sort((a, b) => a.studentName.localeCompare(b.studentName, undefined, { sensitivity: 'base' }));
+   }, [grades, user, selectedSubject]);
 
   const teacherSubjects = useMemo(() => {
     if (user?.role !== UserRole.PROFESSOR) return [];

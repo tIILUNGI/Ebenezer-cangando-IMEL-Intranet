@@ -95,6 +95,7 @@ interface DatabaseContextType {
   addNotification: (notification: Omit<Notification, 'id' | 'timestamp' | 'read'>) => Promise<void>;
   markNotificationRead: (id: string) => Promise<void>;
   clearNotifications: () => Promise<void>;
+  removeNotification: (id: string) => void;
   addLibraryResource: (resource: Omit<LibraryResource, 'id' | 'date'>) => Promise<void>;
   incrementLibraryDownloads: (id: string) => Promise<void>;
   refreshData: () => Promise<void>;
@@ -372,7 +373,15 @@ console.warn('Error in seeding local data:', err);
     setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, read: true } : n)));
   };
 
-  const clearNotifications = () => setNotifications([]);
+   const removeNotification = (id: string) => {
+    setNotifications((prev) => prev.filter((n) => n.id !== id));
+  };
+
+  // Clear all notifications
+  const clearNotifications = async () => {
+    setNotifications([]);
+    localStorage.setItem('imel_db_notifs', JSON.stringify([]));
+  };
 
   const addLibraryResource = async (resource: Omit<LibraryResource, 'id' | 'date'>) => {
     const newRes: LibraryResource = {
@@ -440,6 +449,71 @@ console.warn('Error in seeding local data:', err);
     const newUser = { ...userData, id: newId };
     setUsers((prev) => [...prev, newUser]);
     addAuditLog(createdBy, 'CRIOU_USUARIO', userData.name, userData.processNumber);
+
+    if (userData.role === UserRole.ALUNO) {
+      const studentTurma = userData.turma || '';
+      let subjects: { name: string; teacherId: string }[] = [];
+      if (studentTurma.includes('Gest') || studentTurma.includes('Inf') || studentTurma.includes('Informática') || studentTurma.includes('Informatica')) {
+        subjects = [
+          { name: 'TLP', teacherId: '2' },
+          { name: 'TRECE (Redes)', teacherId: '2' },
+          { name: 'OAE', teacherId: '2' },
+          { name: 'Sistemas de Info.', teacherId: '99' },
+          { name: 'Matemática', teacherId: '98' },
+          { name: 'Inglês Técnico', teacherId: '96' },
+          { name: 'IAG', teacherId: '97' },
+          { name: 'Empreendedorismo', teacherId: '97' },
+          { name: 'Inglês Técnico II', teacherId: '95' },
+          { name: 'PT', teacherId: '94' },
+        ];
+      } else if (studentTurma.includes('Contab') || studentTurma.includes('Contabilidade')) {
+        subjects = [
+          { name: 'Contabilidade Geral', teacherId: '6' },
+          { name: 'Contabilidade Fiscal', teacherId: '6' },
+          { name: 'Contabilidade de Gestão', teacherId: '6' },
+          { name: 'Matemática Financeira', teacherId: '98' },
+          { name: 'Economia', teacherId: '97' },
+          { name: 'Direito Comercial', teacherId: '99' },
+          { name: 'Inglês Técnico', teacherId: '96' },
+          { name: 'Empreendedorismo', teacherId: '97' },
+          { name: 'Estatística', teacherId: '95' },
+          { name: 'Informática Aplicada', teacherId: '2' },
+        ];
+      } else if (studentTurma.includes('Comun') || studentTurma.includes('Comunicação') || studentTurma.includes('Comunicacao') || studentTurma.includes('Social')) {
+        subjects = [
+          { name: 'Jornalismo', teacherId: '7' },
+          { name: 'Comunicação Organizacional', teacherId: '7' },
+          { name: 'Produção Audiovisual', teacherId: '7' },
+          { name: 'Publicidade e Marketing', teacherId: '99' },
+          { name: 'Língua Portuguesa', teacherId: '98' },
+          { name: 'Inglês Técnico', teacherId: '96' },
+          { name: 'Psicologia da Comunicação', teacherId: '97' },
+          { name: 'Empreendedorismo', teacherId: '97' },
+          { name: 'Design Gráfico', teacherId: '2' },
+          { name: 'Ética e Deontologia', teacherId: '95' },
+        ];
+      } else {
+        subjects = [
+          { name: 'Matemática', teacherId: '98' },
+          { name: 'Língua Portuguesa', teacherId: '98' },
+          { name: 'Inglês Técnico', teacherId: '96' },
+        ];
+      }
+
+      const newGrades: Grade[] = subjects.map((sub, idx) => ({
+        id: `g-${newId}-${idx}`,
+        studentId: newId,
+        studentName: newUser.name,
+        subject: sub.name,
+        faltas: 0,
+        teacherId: sub.teacherId,
+        t1: { mac: null, npp: null, npt: null, average: null },
+        t2: { mac: null, npp: null, npt: null, average: null },
+        t3: { mac: null, npp: null, npt: null, average: null },
+      }));
+
+      setGrades((prev) => [...prev, ...newGrades]);
+    }
 
     try {
       await apiCreateUser(newUser);
@@ -572,43 +646,44 @@ console.warn('Error in seeding local data:', err);
     }
   };
 
-  return (
-    <DatabaseContext.Provider
-      value={{
-        users,
-        grades,
-        schedules,
-        library,
-        messages,
-        auditLogs,
-        notifications,
-        updateGrade,
-        replaceGrades: (g) => setGrades(g),
-        replaceSchedules: (s) => setSchedules(s),
-        replaceLibrary: (l) => setLibrary(l),
-        replaceMessages: (m) => setMessages(m),
-        replaceUsers: (u) => setUsers(u),
-        replaceAuditLogs: (l) => setAuditLogs(l),
-        addUser,
-        updateUser,
-        deleteUser,
-        sendMessage,
-        markMessageRead,
-        addNotification,
-        markNotificationRead,
-        clearNotifications,
-        addLibraryResource,
-        incrementLibraryDownloads,
-        refreshData,
-        addAuditLog,
-        addSchedule,
-        updateSchedule,
-        deleteSchedule,
-      }}
-    >
-      {children}
-    </DatabaseContext.Provider>
-  );
+   return (
+     <DatabaseContext.Provider
+       value={{
+         users,
+         grades,
+         schedules,
+         library,
+         messages,
+         auditLogs,
+         notifications,
+         updateGrade,
+         replaceGrades: (g) => setGrades(g),
+         replaceSchedules: (s) => setSchedules(s),
+         replaceLibrary: (l) => setLibrary(l),
+         replaceMessages: (m) => setMessages(m),
+         replaceUsers: (u) => setUsers(u),
+         replaceAuditLogs: (l) => setAuditLogs(l),
+         addUser,
+         updateUser,
+         deleteUser,
+         sendMessage,
+         markMessageRead,
+         addNotification,
+         markNotificationRead,
+         clearNotifications,
+         removeNotification,
+         addLibraryResource,
+         incrementLibraryDownloads,
+         refreshData,
+         addAuditLog,
+         addSchedule,
+         updateSchedule,
+         deleteSchedule,
+       }}
+     >
+       {children}
+     </DatabaseContext.Provider>
+   );
 };
 
 // ===================== AUTH CONTEXT =====================

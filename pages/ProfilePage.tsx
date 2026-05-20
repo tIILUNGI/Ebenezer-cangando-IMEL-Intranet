@@ -1,9 +1,10 @@
 import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth, useDatabase } from '../App';
-import { Lock, Download, Save, User as UserIcon, Shield, Camera } from 'lucide-react';
+import { Lock, Save, User as UserIcon, Shield, Camera } from 'lucide-react';
 import { updateProfile, exportProfileData, changePassword } from '../src/api/index';
 import Swal from 'sweetalert2';
+import { ProfilePdfDownloader } from '../src/components/ProfilePdfDownloader';
 
 const ProfilePage: React.FC = () => {
   const { user, logout } = useAuth();
@@ -68,24 +69,7 @@ const ProfilePage: React.FC = () => {
     setIsLoading(false);
   };
 
-  const handleExportData = () => {
-    const personalData = {
-      user_info: user,
-      academic_records: grades.filter((g) => g.studentId === user.id),
-      audit_logs: auditLogs.filter((l) => l.user === user.name || l.target === user.name),
-      export_date: new Date().toISOString(),
-      school: 'IMEL',
-    };
-    const blob = new Blob([JSON.stringify(personalData, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `dados_pessoais_${user.processNumber}_${new Date().toISOString().split('T')[0]}.json`;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(url);
-  };
+  // Deprecated JSON export; replaced by PDF downloader
 
   const handleLogout = () => {
     Swal.fire({
@@ -172,12 +156,7 @@ const ProfilePage: React.FC = () => {
           </div>
 
           <div className="pt-4">
-            <button
-              onClick={handleExportData}
-              className="w-full py-4 border-2 border-slate-200 dark:border-slate-700 rounded-2xl font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all flex items-center justify-center gap-2"
-            >
-              <Download size={18} /> Baixar Meus Dados (GDPR)
-            </button>
+            <ProfilePdfDownloader />
           </div>
 
           <div className="pt-4">

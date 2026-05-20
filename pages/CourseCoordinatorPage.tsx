@@ -24,7 +24,7 @@ const CourseCoordinatorPage: React.FC = () => {
 
   const courseName = user.coordinatedEntity || '';
   const allStudents = users.filter((u) => u.role === UserRole.ALUNO);
-  const classes = Array.from(new Set(allStudents.map((s) => s.turma || '').filter(Boolean))) as string[];
+  const classes = (Array.from(new Set(allStudents.map((s) => s.turma || '').filter(Boolean))) as string[]).sort((a, b) => a.localeCompare(b));
   const relevantClasses = classes.filter((c: string) =>
     c.toLowerCase().includes(courseName.toLowerCase())
   );

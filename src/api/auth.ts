@@ -20,37 +20,47 @@ export const login = async (processNumber: string, password: string) => {
     localStorage.setItem(USER_KEY, JSON.stringify(data.user));
     return data;
   } catch (err: any) {
+    // Attempt to find a mock user regardless of error type
+    let mockUser = TEST_USERS.find(
+      (u) => u.processNumber === processNumber && u.password === password
+    );
+    if (!mockUser) {
+      // Also try to find in localStorage users
+      try {
+        const storedUsers = localStorage.getItem('imel_db_users');
+        if (storedUsers) {
+          const users = JSON.parse(storedUsers);
+          mockUser = users.find(
+            (u: any) => u.processNumber === processNumber && u.password === password
+          );
+        }
+      } catch (e) {
+        console.warn('Failed to parse localStorage users', e);
+      }
+    }
+    if (mockUser) {
+      if (mockUser.isActive === false) {
+        throw new Error('Usuário desativado. Entre em contacto com o administrador ou secretaria para a ativação da sua conta');
+      }
+      const mockData = {
+        token: generateMockToken(),
+        refreshToken: '',
+        user: mockUser,
+      };
+      localStorage.setItem(AUTH_TOKEN_KEY, mockData.token);
+      localStorage.setItem(REFRESH_TOKEN_KEY, '');
+      localStorage.setItem(USER_KEY, JSON.stringify(mockData.user));
+      return mockData;
+    }
+    // Existing network error handling remains unchanged
     const isNetworkError =
       !err.response ||
       err.code === 'ECONNREFUSED' ||
       err.code === 'ERR_NETWORK' ||
       err.message?.includes('Network Error');
-
     if (isNetworkError) {
-      const mockUser = TEST_USERS.find(
-        (u) => u.processNumber === processNumber && u.password === password
-      );
-      if (mockUser) {
-        if (mockUser.isActive === false) {
-          throw new Error('Usuário desativado. Entre em contacto com o administrador ou secretaria para a ativação da sua conta');
-        }
-
-        const mockData = {
-          token: generateMockToken(),
-          refreshToken: '',
-          user: mockUser,
-        };
-
-        localStorage.setItem(AUTH_TOKEN_KEY, mockData.token);
-        localStorage.setItem(REFRESH_TOKEN_KEY, '');
-        localStorage.setItem(USER_KEY, JSON.stringify(mockData.user));
-
-        return mockData;
-      }
-
       throw new Error('Credenciais inválidas');
     }
-
     const isInactiveError =
       err.response?.data?.error?.includes('desativado') ||
       err.response?.data?.error?.includes('inativa') ||
@@ -59,7 +69,6 @@ export const login = async (processNumber: string, password: string) => {
     if (isInactiveError) {
       throw err;
     }
-
     throw err;
   }
 };

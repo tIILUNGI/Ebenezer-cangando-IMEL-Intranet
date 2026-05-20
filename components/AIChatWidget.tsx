@@ -1,4 +1,4 @@
-﻿import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { BrainCircuit } from 'lucide-react';
 import { GoogleGenAI } from '@google/genai';
 import { useAuth, useDatabase } from '../App';
@@ -69,7 +69,7 @@ const AIChatWidget: React.FC = () => {
     <>
       <button
         onClick={() => setChatOpen(true)}
-        className="fixed bottom-6 right-6 w-16 h-16 rounded-full bg-primary text-white shadow-2xl flex items-center justify-center hover:scale-105 transition-all z-50"
+        className="fixed right-6 top-1/2 -translate-y-1/2 w-16 h-16 rounded-full bg-primary text-white shadow-2xl flex items-center justify-center hover:scale-105 transition-all z-50"
         title="Abrir Chat IA"
       >
         <BrainCircuit size={28} />
