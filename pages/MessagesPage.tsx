@@ -11,6 +11,7 @@ import {
   CheckCheck,
   Image as ImageIcon,
   Paperclip,
+  Video,
 } from 'lucide-react';
 import { useDatabase, useAuth } from '../App';
 import { User, UserRole } from '../types';
@@ -23,7 +24,12 @@ const MessagesPage: React.FC = () => {
   const [content, setContent] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [mobileView, setMobileView] = useState<'list' | 'chat'>('list');
-const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [attachment, setAttachment] = useState<File | null>(null);
+  const [callOptionsOpen, setCallOptionsOpen] = useState(false);
+  const [isCallActive, setIsCallActive] = useState(false);
+  const [isVideoCall, setIsVideoCall] = useState(false);
+  const [localStream, setLocalStream] = useState<MediaStream | null>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const isProfessor = user?.role === UserRole.PROFESSOR;
@@ -174,53 +180,54 @@ const allowedPeers = useMemo(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [activeThread]);
 
-  const handleSelectPeer = (peer: User) => {
-    setActivePeer(peer);
-    setMobileView('chat');
-  };
-
-  const handleBackToList = () => setMobileView('list');
-
-  const [attachment, setAttachment] = useState<File | null>(null);
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setAttachment(e.target.files[0]);
-    }
-  };
-
-  const getAttachmentType = (file: File): 'image' | 'pdf' | 'audio' => {
-    if (file.type.startsWith('image/')) return 'image';
-    if (file.type === 'application/pdf') return 'pdf';
-    return 'audio';
-  };
-
-  const handleSend = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!activePeer) return;
-    const hasText = content.trim().length > 0;
-    if (!hasText && !attachment) return;
-    try {
-      if (attachment) {
-        const url = URL.createObjectURL(attachment);
-        const type = getAttachmentType(attachment);
-        // send as a special message with attachment metadata in content JSON string
-        await ctxSend(activePeer.id, JSON.stringify({ attachmentUrl: url, attachmentType: type }));
-        setAttachment(null);
+    const handleSelectPeer = (peer: User) => {
+      setActivePeer(peer);
+      setMobileView('chat');
+    };
+  
+    const handleBackToList = () => setMobileView('list');
+  
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (e.target.files && e.target.files[0]) {
+        setAttachment(e.target.files[0]);
       }
-      if (hasText) {
-        await ctxSend(activePeer.id, content.trim());
+    };
+
+    // Send message handler
+    const handleSend = async (e: React.FormEvent) => {
+      e.preventDefault();
+      if (!activePeer) return;
+
+      const hasText = content.trim().length > 0;
+      if (!hasText && !attachment) return;
+
+      try {
+        if (attachment) {
+          const url = URL.createObjectURL(attachment);
+          const type = getAttachmentType(attachment);
+          // send as a special message with attachment metadata in content JSON string
+          await ctxSend(
+            activePeer.id,
+            JSON.stringify({ attachmentUrl: url, attachmentType: type })
+          );
+          setAttachment(null);
+        }
+
+        if (hasText) {
+          await ctxSend(activePeer.id, content.trim());
+        }
+
+        setContent('');
+      } catch (err) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Erro ao enviar mensagem',
+          text: (err as any)?.message || 'Tente novamente.',
+        });
       }
-      setContent('');
-    } catch (err) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Erro ao enviar mensagem',
-        text: (err as any)?.message || 'Tente novamente.',
-      });
-    }
-    setTimeout(() => inputRef.current?.focus(), 100);
-  };
+
+      setTimeout(() => inputRef.current?.focus(), 100);
+    };
 
   // ── format timestamp ────────────────────────────────────────────────────
   const formatTime = (ts: string) => {
@@ -232,13 +239,156 @@ const allowedPeers = useMemo(() => {
     catch { return ts; }
   };
 
-  // ── need to load messages from API on mount ─────────────────────────────
-  useEffect(() => {
-    // Ensure messages/users are hydrated for this page.
-    refreshData();
-  }, []);
+       // ── need to load messages from API on mount ─────────────────────────────
+   useEffect(() => {
+     // Ensure messages/users are hydrated for this page.
+     refreshData();
+   }, []);
 
-  // ── empty state ─────────────────────────────────────────────────────────
+    // Handle normal phone call
+    const handleNormalCall = async () => {
+      setCallOptionsOpen(false);
+      if (!activePeer) return;
+      
+      try {
+        // Request audio only for normal call
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+        setLocalStream(stream);
+        setIsCallActive(true);
+        setIsVideoCall(false);
+        
+        // Simulate a phone call with actual media
+        Swal.fire({
+          title: 'Chamada',
+          html: `
+            <div class="w-full">
+              <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-full bg-slate-200 flex items-center justify-center text-slate-800 font-black">${activePeer.name?.charAt(0)?.toUpperCase()}</div>
+                <div class="flex-1 min-w-0">
+                  <div class="font-bold text-slate-900">${activePeer.name}</div>
+                  <div class="text-slate-500 text-sm">Chamada de áudio em curso…</div>
+                </div>
+                <div class="text-xs font-black px-2 py-1 rounded-full bg-green-500 text-white">AO VIVO</div>
+              </div>
+
+              <div class="mt-4 flex items-center justify-center">
+                <div class="relative w-48 h-36 bg-slate-800 rounded-lg flex items-center justify-center text-white">
+                  <span class="text-4xl">📞</span>
+                  <div class="absolute bottom-3 right-3 bg-green-500 text-white text-xs rounded-full px-2 py-1">MIC</div>
+                </div>
+              </div>
+
+              <div class="mt-4 text-center text-slate-400 text-sm">Microfone habilitado.</div>
+            </div>
+          `,
+          showCancelButton: true,
+          confirmButtonText: 'Finalizar',
+          cancelButtonText: 'Manter',
+          showConfirmButton: true,
+          showCloseButton: true,
+          allowOutsideClick: false
+        }).then((result) => {
+          // Clean up streams when call ends
+          if (localStream) {
+            localStream.getTracks().forEach(track => track.stop());
+            setLocalStream(null);
+          }
+          setIsCallActive(false);
+          
+          if (result.isConfirmed) {
+            Swal.fire({
+              title: 'Chamada Finalizada',
+              text: 'A chamada de áudio foi encerrada.',
+              icon: 'info',
+              timer: 1500,
+              showConfirmButton: false
+            });
+          }
+        });
+      } catch (err) {
+        console.error('Error accessing media devices:', err);
+        Swal.fire({
+          title: 'Erro ao iniciar chamada',
+          text: 'Não foi possível acessar o microfone. Verifique as permissões do navegador.',
+          icon: 'error'
+        });
+      }
+    };
+
+    // Handle video call
+    const handleVideoCall = async () => {
+      setCallOptionsOpen(false);
+      if (!activePeer) return;
+      
+      try {
+        // Request both audio and video for video call
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
+        setLocalStream(stream);
+        setIsCallActive(true);
+        setIsVideoCall(true);
+        
+        // Simulate a video call with actual media
+        Swal.fire({
+          title: 'Chamada de Vídeo em Andamento',
+          html: `
+            <div class="text-center">
+              <div class="mb-4">
+                <video autoplay playsinline style="width: 200px; height: 150px; object-fit: cover; border-radius: 12px; border: 2px solid #3b82f6;">
+                </video>
+                <div class="absolute bottom-2 right-2 bg-green-500 text-white text-xs rounded-full p-1 mt-4 relative">AO VIVO</div>
+              </div>
+              <div>
+                <strong>${activePeer.name}</strong><br/>
+                <span class="text-slate-500">Chamada de vídeo em curso...</span>
+              </div>
+              <div class="mt-4">
+                <small class="text-slate-400">Chamada de vídeo ativa. Câmera e microfone habilitados.</small>
+              </div>
+            </div>
+          `,
+          showCancelButton: true,
+          confirmButtonText: 'Finalizar Chamada',
+          cancelButtonText: 'Manter em Chamada',
+          showConfirmButton: true,
+          showCloseButton: true,
+          allowOutsideClick: false,
+          didOpen: () => {
+            // Attach the stream immediately (don't rely on React state timing)
+            const videoElement = Swal.getPopup()?.querySelector('video');
+            if (videoElement && stream) {
+              videoElement.srcObject = stream;
+              videoElement.play().catch(() => {});
+            }
+          }
+        }).then((result) => {
+          // Clean up streams when call ends
+          if (localStream) {
+            localStream.getTracks().forEach(track => track.stop());
+            setLocalStream(null);
+          }
+          setIsCallActive(false);
+          
+          if (result.isConfirmed) {
+            Swal.fire({
+              title: 'Chamada Finalizada',
+              text: 'A chamada de vídeo foi encerrada.',
+              icon: 'info',
+              timer: 1500,
+              showConfirmButton: false
+            });
+          }
+        });
+      } catch (err) {
+        console.error('Error accessing media devices:', err);
+        Swal.fire({
+          title: 'Erro ao iniciar chamada de vídeo',
+          text: 'Não foi possível acessar a câmera e microfone. Verifique as permissões do navegador.',
+          icon: 'error'
+        });
+      }
+    };
+
+   // ── empty state ─────────────────────────────────────────────────────────
   const renderEmptyState = () => (
     <div className="flex-1 flex flex-col items-center justify-center h-full text-slate-300 gap-3 p-8">
       <div className="w-20 h-20 bg-slate-100 dark:bg-slate-700 rounded-full flex items-center justify-center">
@@ -400,28 +550,60 @@ Object.entries(
               >
                 <ArrowLeft size={18} className="text-slate-500" />
               </button>
-              <div className="w-9 h-9 bg-primary text-white rounded-full flex items-center justify-center font-black text-sm">
-                {activePeer.name.charAt(0).toUpperCase()}
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-black text-slate-800 dark:text-white truncate">
-                  {activePeer.name}
-                </p>
-                {attachment && (
-                  <div className="mt-2 text-xs text-slate-500">
-                    Anexo: {attachment.name}
-                  </div>
-                )}
-                <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest">
-                  {activePeer.role} {activePeer.turma ? `· ${activePeer.turma}` : ''}
-                </p>
-              </div>
-              <button className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full transition-colors text-slate-400">
-                <Phone size={16} />
-              </button>
-              <button className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full transition-colors text-slate-400">
-                <MoreVertical size={16} />
-              </button>
+               <div className="w-9 h-9 bg-primary text-white rounded-full flex items-center justify-center font-black text-sm">
+                 {activePeer.name.charAt(0).toUpperCase()}
+               </div>
+               <div className="flex-1 min-w-0">
+                 <p className="text-sm font-black text-slate-800 dark:text-white truncate">
+                   {activePeer.name}
+                 </p>
+                 {attachment && (
+                   <div className="mt-2 text-xs text-slate-500">
+                     Anexo: {attachment.name}
+                   </div>
+                 )}
+                 <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest">
+                   {activePeer.role} {activePeer.turma ? `· ${activePeer.turma}` : ''}
+                 </p>
+               </div>
+               <div className="relative">
+                 <button 
+                   className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full transition-colors text-slate-400"
+                   onClick={(e) => {
+                     e.stopPropagation();
+                     setCallOptionsOpen(!callOptionsOpen);
+                   }}
+                 >
+                   <Phone size={16} />
+                 </button>
+                 {callOptionsOpen && (
+                   <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-slate-200 dark:border-slate-600 z-10">
+                     <div className="py-2">
+                       <div 
+                         className="flex items-center px-4 py-2 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors border-b dark:border-slate-600"
+                         onClick={handleNormalCall}
+                       >
+                         <span className="mr-3">
+                           <Phone className="text-primary" size={14} />
+                         </span>
+                         Chamada Normal
+                       </div>
+                       <div 
+                         className="flex items-center px-4 py-2 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                         onClick={handleVideoCall}
+                       >
+                         <span className="mr-3">
+                           <Video size={14} className="text-primary" />
+                         </span>
+                         Chamada de Vídeo
+                       </div>
+                     </div>
+                   </div>
+                 )}
+               </div>
+               <button className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full transition-colors text-slate-400">
+                 <MoreVertical size={16} />
+               </button>
             </div>
 
             {/* ─── Messages Area ─── */}
